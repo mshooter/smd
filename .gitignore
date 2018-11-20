@@ -1,0 +1,8 @@
+*.swp
+*/obj 
+Makefile 
+*/Makefile 
+*.qmake*
+tests/tests
+demo/demo
+deformationLib/lib
