@@ -17,7 +17,9 @@ QMAKE_CXXFLAGS += -std=c++14 -fPIC -g -O3
 INCLUDEPATH += \
     /usr/local/include/glm \ 
     /usr/local/include \ 
-    $$PWD/include
+    $$PWD/include \
+    /public/devel/2018/include \
+    /public/devel/2018/include/eigen3
 
 macx:{
     QMAKE_CXXFLAGS += -arch x86_64

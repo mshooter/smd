@@ -3,6 +3,7 @@
 #define _DEFORMALEOBJECT_H_
 
 #include <vector>
+#include <Eigen/Dense>
 #include "Mesh3D.h"
 #include "Particle.h"
 /// \author Moira Shooter
@@ -14,7 +15,7 @@
 /// \class DeformableObject
 /// \brief class that represent a mesh 
 /// \todo the particle system with the update function 
-/// \todo 1) center of mass 
+/// \todo 
 
 class DeformableObject
 {
@@ -117,8 +118,6 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
-        /// ----
-        // remove file
 };
 
 #endif // _DEFORMALEOBJECT_H_

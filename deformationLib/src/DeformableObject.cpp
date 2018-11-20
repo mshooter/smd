@@ -96,6 +96,19 @@ void DeformableObject::calculateR()
 {
     // might use eigen as a library
     glm::mat3 S = glm::transpose(m_Apq) * m_Apq; 
-    glm::mat3 S_inverse = glm::sqrt(S);
-    m_R = m_Apq * S_inverse;
+    // convert to an eigen matrix
+    Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seig(&S[0][0]);
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seigsq(Seig);
+    Eigen::Matrix<float, 3,3, Eigen::RowMajor> S_inverse = Seigsq.operatorInverseSqrt();
+    // convert the S_inverse to glm 
+    glm::mat3 S_inverseGlm;
+    for(int i=0; i < 3; ++i)
+    {
+        for(int j=0; j < 3; ++j)
+        {
+            S_inverseGlm[i][j] = S_inverse(i,j);
+        }
+    }
+    // calculated R - do tests
+    m_R = m_Apq * S_inverseGlm;
 }
