@@ -42,42 +42,42 @@ glm::vec3 Particle::getForce()
 //----------------------------------------------------------------------
 void Particle::setMass(float _mass)
 {
-	m_mass = _mass;
+	m_mass = std::move(_mass);
 }
 //---------------------------------------------------------------------
 void Particle::setInitPosition(glm::vec3 _initPosition)
 {
-	m_initPosition = _initPosition;
+	m_initPosition = std:;move(_initPosition);
 }
 //----------------------------------------------------------------------
 void Particle::setCurrentPosition(glm::vec3 _currentPosition)
 {
-	m_currentPosition = _currentPosition;
+	m_currentPosition = std::move(_currentPosition);
 }
 //---------------------------------------------------------------------
 void Particle::setGoalPosition(glm::vec3 _goalPosition)
 {
-	m_goalPosition = _goalPosition;
+	m_goalPosition = std::move(_goalPosition);
 }
 //---------------------------------------------------------------------
 void Particle::setVelocity(glm::vec3 _velocity)
 {
-	m_velocity = _velocity;
+	m_velocity = std::move(_velocity);
 }
 //---------------------------------------------------------------------
 void Particle::setQ(glm::vec3 _q)
 {
-    m_q = _q;
+    m_q = std::move(_q);
 }
 //---------------------------------------------------------------------
 void Particle::setP(glm::vec3 _p)
 {
-    m_p = _p; 
+    m_p = std::move(_p); 
 }
 //---------------------------------------------------------------------
 void Particle::setForce(glm::vec3 _force)
 {
-    m_force = _force;
+    m_force = std::move(_force);
 }
 //---------------------------------------------------------------------
 void Particle::reset()
