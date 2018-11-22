@@ -15,11 +15,14 @@
 /// \class DeformableObject
 /// \brief class that represent a mesh 
 /// \todo the particle system with the update function 
-/// \todo 
 
 class DeformableObject
 {
     public:
+        /// ---------------------------------------------------------
+        /// @build default constructor
+        /// ---------------------------------------------------------
+        DeformableObject() = default; 
         /// ---------------------------------------------------------
         /// @build constructor that sets the particle system initial
         /// state
@@ -46,6 +49,14 @@ class DeformableObject
         /// ---------------------------------------------------------
         ~DeformableObject() = default;
         /// ---------------------------------------------------------
+        /// @build initialize 
+        /// ---------------------------------------------------------
+        void initialize(Mesh3D _mesh);
+        /// ---------------------------------------------------------
+        /// @build set the particle list 
+        /// ---------------------------------------------------------
+        void setListOfParticles(Mesh3D _mesh);
+        /// ---------------------------------------------------------
         /// @build get the particle list 
         /// ---------------------------------------------------------
         std::vector<Particle> getListOfParticles();
@@ -57,6 +68,14 @@ class DeformableObject
         /// @build get current center of mass
         /// ---------------------------------------------------------
         glm::vec3 getCurrentCOM();
+        /// ---------------------------------------------------------
+        /// @build get A_qq
+        /// ---------------------------------------------------------
+        glm::mat3 getA_qq();
+        /// ---------------------------------------------------------
+        /// @build get A_pq
+        /// ---------------------------------------------------------
+        glm::mat3 getA_pq();
         /// ---------------------------------------------------------
         /// @build update function
         /// @param[_in] _timeStep 
@@ -88,6 +107,8 @@ class DeformableObject
         /// linear decomposition 
         /// ---------------------------------------------------------
         void calculateR();
+        
+
     private:
         /// ---------------------------------------------------------
         /// @build container that holds the particles

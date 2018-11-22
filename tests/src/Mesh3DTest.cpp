@@ -6,14 +6,14 @@ TEST(Mesh3D, getVertices)
     Mesh3D mesh;
     mesh.loadObject("models/cube.obj");
     std::vector<glm::vec3> test_vert;
-    test_vert.push_back(glm::vec3(-0.5f, -0.633149f, 0.5f));
-    test_vert.push_back(glm::vec3( 0.5f, -0.633149f, 0.5f));
-    test_vert.push_back(glm::vec3( 0.5f, 0.366851f, 0.5f));
-    test_vert.push_back(glm::vec3( -0.5f, 0.366851f, 0.5f));
-    test_vert.push_back(glm::vec3( 0.5f, 0.366851f, -0.5f));
-    test_vert.push_back(glm::vec3( -0.5f, 0.366851f, -0.5f));
-    test_vert.push_back(glm::vec3( 0.5f, -0.633149f, -0.5f));
-    test_vert.push_back(glm::vec3( -0.5f, -0.633149f, -0.5f));
+    test_vert.push_back(glm::vec3(- 0.5f, - 0.5f, 0.5f));
+    test_vert.push_back(glm::vec3(  0.5f, - 0.5f, 0.5f));
+    test_vert.push_back(glm::vec3(- 0.5f,   0.5f, 0.5f));
+    test_vert.push_back(glm::vec3(  0.5f,   0.5f, 0.5f));
+    test_vert.push_back(glm::vec3(- 0.5f,   0.5f, -0.5f));
+    test_vert.push_back(glm::vec3(  0.5f,   0.5f, -0.5f));
+    test_vert.push_back(glm::vec3(- 0.5f, - 0.5f, -0.5f));
+    test_vert.push_back(glm::vec3(  0.5f, - 0.5f, -0.5f));
 
     EXPECT_EQ(test_vert, mesh.getVertexPositions());
 

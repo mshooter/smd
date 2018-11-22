@@ -15,7 +15,9 @@ INCLUDEPATH += ../deformationLib/include
 INCLUDEPATH += \
    /usr/local/include/glm \ 
    /usr/local/include/gtest \ 
-   /usr/local/include 
+   /usr/local/include \
+   /usr/local/include/eigen3 \
+   /public/devel/2018/include/eigen3
   
 OTHER_FILES += \ 
     $$files(models/*, true)

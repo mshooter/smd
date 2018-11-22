@@ -19,7 +19,8 @@ INCLUDEPATH += \
     /usr/local/include \ 
     $$PWD/include \
     /public/devel/2018/include \
-    /public/devel/2018/include/eigen3
+    /public/devel/2018/include/eigen3 \
+    /usr/local/include/eigen3
 
 macx:{
     QMAKE_CXXFLAGS += -arch x86_64

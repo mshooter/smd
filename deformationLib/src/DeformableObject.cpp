@@ -18,6 +18,32 @@ DeformableObject::DeformableObject(Mesh3D _mesh)
     calculateA_qq();
 }
 /// ---------------------------------------------------------
+void DeformableObject::initialize(Mesh3D _mesh)
+{
+    // initialize the list of particles 
+    // set the rest positions for the particle system 
+    // loop over the vertex positions and create a list of particles 
+    for(int i = 0; i < _mesh.getNumberOfVertex(); ++i)
+    {
+       m_listOfParticles.emplace_back(Particle(_mesh.getVertexPositions()[i], 1.0f)); 
+    }
+
+    // calculate original center of mass 
+    calculateCOM();
+    // calculate the original relative positions 
+    calculateQ();
+    // calculate symmetric matrix = constant 
+    calculateA_qq();
+}
+/// ---------------------------------------------------------
+void DeformableObject::setListOfParticles(Mesh3D _mesh)
+{
+    for(int i=0; i < _mesh.getNumberOfVertex(); ++i)
+    {
+        m_listOfParticles.emplace_back(Particle(_mesh.getVertexPositions()[i],1.0f));
+    }
+}
+/// ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
 {
     return m_listOfParticles;
@@ -31,6 +57,16 @@ glm::vec3 DeformableObject::getOriginalCOM()
 glm::vec3 DeformableObject::getCurrentCOM()
 {
     return m_currentCenterOfMass; 
+}
+/// ---------------------------------------------------------
+glm::mat3 DeformableObject::getA_qq()
+{
+    return m_Aqq; 
+}
+/// ---------------------------------------------------------
+glm::mat3 DeformableObject::getA_pq()
+{
+    return m_Apq;
 }
 /// ---------------------------------------------------------
 void DeformableObject::update(float _timeStep)
@@ -72,13 +108,18 @@ void DeformableObject::calculateA_qq()
     // 3 x 1 * 1 x 3 = 3 x 3  
     // row * column
     // creates a matrix 
-
-    for(auto& part : m_listOfParticles)
+    std::vector<Particle> list = m_listOfParticles;
+    for(int i=0; i < 2; ++i)
     {
-        m_Aqq += part.getMass() * glm::outerProduct(part.getQ(), part.getQ());        
+        m_Aqq += list[i].getMass() * glm::outerProduct(list[i].getQ(), list[i].getQ());
     }
+    
+ //   for(auto& part : m_listOfParticles)
+ //   {
+ //       m_Aqq += part.getMass() * glm::outerProduct(part.getQ(), part.getQ());        
+ //   }
 
-    m_Aqq = glm::inverse(m_Aqq);
+//    m_Aqq = glm::inverse(m_Aqq);
 }
 /// ---------------------------------------------------------
 void DeformableObject::calculateA_pq()

@@ -18,7 +18,8 @@ LIBS += -L../deformationLib/lib -ldeformationLib
 macx:{
     INCLUDEPATH += /usr/local/include 
     INCLUDEPATH += /usr/local/Cellar
-    INCLUDEPATH += /usr/local/lib
+    INCLUDEPATH += /usr/local/lib \ 
+                   /usr/local/include/eigen3
 }
 
 OTHER_FILES += \ 
