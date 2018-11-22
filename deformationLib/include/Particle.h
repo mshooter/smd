@@ -49,16 +49,10 @@ class Particle
         /// @default  deconstrutor 
         /// ---------------------------------------------------------
         ~Particle() = default;
-        
-        
         /// ---------------------------------------------------------
         /// @build get mass of the particle
         /// ---------------------------------------------------------
         float getMass();
-        /// ---------------------------------------------------------
-        /// @build get the radius of the particle (sphere) 
-        /// ---------------------------------------------------------
-        float getRadius();
         /// ---------------------------------------------------------
         /// @build get the initial position of the particle
         /// ---------------------------------------------------------
@@ -76,10 +70,6 @@ class Particle
         /// ---------------------------------------------------------
         glm::vec3 getVelocity();
         /// ---------------------------------------------------------
-        /// @build get the acceleration of the particle 
-        /// ---------------------------------------------------------
-        glm::vec3 getAcceleration(); 
-        /// ---------------------------------------------------------
         /// @build get the original relative pos of the particle 
         /// ---------------------------------------------------------
         glm::vec3 getQ();
@@ -88,15 +78,14 @@ class Particle
         /// ---------------------------------------------------------
         glm::vec3 getP();
         /// ---------------------------------------------------------
+        /// @build get external force  
+        /// ---------------------------------------------------------
+        glm::vec3 getForce();
+        /// ---------------------------------------------------------
         /// @build set the mass of the particle 
         /// @param[_in] _mass : the mass you want to set the particle
         /// ---------------------------------------------------------
         void setMass(float _mass);
-        /// ---------------------------------------------------------
-        /// @build set the radius of the particle 
-        /// @param[_in] _radius: the radius of the particle (sphere)
-        /// ---------------------------------------------------------
-        void setRadius(float _radius);
         /// ---------------------------------------------------------
         /// @build set the intial position of the particle
         /// @param[_in] _initPosition : the initial position 
@@ -118,11 +107,6 @@ class Particle
         /// ---------------------------------------------------------
         void setVelocity(glm::vec3 _velocity);
         /// ---------------------------------------------------------
-        /// @build set the acceleration of the particle 
-        /// @param[_in] _acceleratoin : the acceleration of the particle 
-        /// ---------------------------------------------------------
-        void setAcceleration(glm::vec3 _acceleration);
-        /// ---------------------------------------------------------
         /// @build set original relative coordinate, q
         /// ---------------------------------------------------------
         void setQ(glm::vec3 _q);
@@ -131,14 +115,20 @@ class Particle
         /// ---------------------------------------------------------
         void setP(glm::vec3 _p);
         /// ---------------------------------------------------------
+        /// @build set force  
+        /// ---------------------------------------------------------
+        void setForce(glm::vec3 _force);
+        /// ---------------------------------------------------------
         /// @build reset method : sets the particle to default value 
         /// ---------------------------------------------------------
         void reset();
         /// ---------------------------------------------------------
         /// @build update method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
+        /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
-        void update(float _timeStep);       
+        void update(float _timeStep, float _stiffness);       
+
     private:
         /// ---------------------------------------------------------
         /// @build initial position of the particle
@@ -148,10 +138,6 @@ class Particle
         /// @build the mass of the particle 
         /// ---------------------------------------------------------
         float m_mass;
-        /// ---------------------------------------------------------
-        /// @build the radius of the particle  
-        /// ---------------------------------------------------------
-        float m_radius;
         /// ---------------------------------------------------------
         /// @build the current position of the particle 
         /// ---------------------------------------------------------
@@ -165,10 +151,6 @@ class Particle
         /// ---------------------------------------------------------
         glm::vec3 m_velocity; 
         /// ---------------------------------------------------------
-        /// @build  acceleration of the particle
-        /// ---------------------------------------------------------
-        glm::vec3 m_acceleration; 
-        /// ---------------------------------------------------------
         /// @build  inital relative coordinate, q
         /// ---------------------------------------------------------
         glm::vec3 m_q; 
@@ -176,6 +158,10 @@ class Particle
         /// @build  current relative coordinate, p 
         /// ---------------------------------------------------------
         glm::vec3 m_p;
+        /// ---------------------------------------------------------
+        /// @build  force of the particle   
+        /// ---------------------------------------------------------
+        glm::vec3 m_force;
 };
 
 #endif // _PARTICLE_H_

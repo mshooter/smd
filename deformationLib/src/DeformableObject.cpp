@@ -69,9 +69,12 @@ glm::mat3 DeformableObject::getA_pq()
     return m_Apq;
 }
 /// ---------------------------------------------------------
-void DeformableObject::update(float _timeStep)
+void DeformableObject::update(float _timeStep, float _stiffness)
 {
-    // update the particle step
+    for(auto& part : m_listOfParticles)
+    {
+        part.update(_timeStep, _stiffness);
+    }
 }
 /// ---------------------------------------------------------
 void DeformableObject::calculateCOM(bool _isCurrent)
@@ -109,17 +112,13 @@ void DeformableObject::calculateA_qq()
     // row * column
     // creates a matrix 
     std::vector<Particle> list = m_listOfParticles;
-    for(int i=0; i < 2; ++i)
-    {
-        m_Aqq += list[i].getMass() * glm::outerProduct(list[i].getQ(), list[i].getQ());
-    }
     
- //   for(auto& part : m_listOfParticles)
- //   {
- //       m_Aqq += part.getMass() * glm::outerProduct(part.getQ(), part.getQ());        
- //   }
+    for(auto& part : m_listOfParticles)
+    {
+        m_Aqq += part.getMass() * glm::outerProduct(part.getQ(), part.getQ());        
+    }
 
-//    m_Aqq = glm::inverse(m_Aqq);
+    m_Aqq = glm::inverse(m_Aqq);
 }
 /// ---------------------------------------------------------
 void DeformableObject::calculateA_pq()
@@ -153,3 +152,13 @@ void DeformableObject::calculateR()
     // calculated R - do tests
     m_R = m_Apq * S_inverseGlm;
 }
+/// ---------------------------------------------------------
+void DeformableObject::calculateGoalPos()
+{
+   for(auto& part : m_listOfParticles)
+   {
+       glm::vec3 temp = m_R * (part.getInitPosition() - m_originalCenterOfMass ) + m_currentCenterOfMass;
+       part.setGoalPosition(temp);
+   }
+}
+

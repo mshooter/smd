@@ -8,13 +8,6 @@ TEST(Particle, setMasss)
     EXPECT_EQ(1.0f, particle.getMass());
 }
 
-TEST(Particle, setRadius)
-{
-    Particle particle;
-    particle.setRadius(2.0f);
-    EXPECT_EQ(2.0f, particle.getRadius());
-}
-
 TEST(Particle, setInitPosition)
 {
     Particle particle; 

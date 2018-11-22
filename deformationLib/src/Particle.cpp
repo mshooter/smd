@@ -5,11 +5,6 @@ float Particle::getMass()
 	return m_mass;
 }
 //----------------------------------------------------------------------
-float Particle::getRadius()
-{
-    return m_radius; 
-}
-//----------------------------------------------------------------------
 glm::vec3 Particle::getInitPosition()
 {
 	return m_initPosition;
@@ -30,11 +25,6 @@ glm::vec3 Particle::getVelocity()
 	return m_velocity;
 }
 //----------------------------------------------------------------------
-glm::vec3 Particle::getAcceleration()
-{
-    return m_acceleration;
-}
-//----------------------------------------------------------------------
 glm::vec3 Particle::getQ()
 {
     return m_q;
@@ -45,14 +35,14 @@ glm::vec3 Particle::getP()
     return m_p;
 }
 //----------------------------------------------------------------------
+glm::vec3 Particle::getForce()
+{
+    return m_force;
+}
+//----------------------------------------------------------------------
 void Particle::setMass(float _mass)
 {
 	m_mass = _mass;
-}
-//----------------------------------------------------------------------
-void Particle::setRadius(float _radius)
-{
-    m_radius = _radius; 
 }
 //---------------------------------------------------------------------
 void Particle::setInitPosition(glm::vec3 _initPosition)
@@ -74,11 +64,6 @@ void Particle::setVelocity(glm::vec3 _velocity)
 {
 	m_velocity = _velocity;
 }
-//----------------------------------------------------------------------
-void Particle::setAcceleration(glm::vec3 _acceleration)
-{
-    m_acceleration = _acceleration;
-}
 //---------------------------------------------------------------------
 void Particle::setQ(glm::vec3 _q)
 {
@@ -90,22 +75,23 @@ void Particle::setP(glm::vec3 _p)
     m_p = _p; 
 }
 //---------------------------------------------------------------------
+void Particle::setForce(glm::vec3 _force)
+{
+    m_force = _force;
+}
+//---------------------------------------------------------------------
 void Particle::reset()
 {
     m_initPosition = glm::vec3{0.0f};
     m_mass = 1.0f; 
-    m_radius = 1.0f;
     m_currentPosition = glm::vec3{0.0f};
     m_goalPosition = glm::vec3{0.0f};
     m_velocity = glm::vec3{0.0f};
 }
 //---------------------------------------------------------------------
-void Particle::update(float _timeStep)
+void Particle::update(float _timeStep, float _stiffness)
 {
-    // gravity or external forces can be added to velocity 
-    // if velocity and acceleration is the same for each particle it will move 
-    // as a solid object 
-    // gravity = _timeStep * f_ext / m_i <- gravity acts upon every particle 
-    m_velocity += m_acceleration * _timeStep; 
-    m_currentPosition += m_velocity * _timeStep;     
+    // basic algorithm
+    m_velocity += _stiffness *( m_goalPosition - m_currentPosition ) / _timeStep + (_timeStep / m_mass) * m_force; 
+    m_currentPosition += _timeStep * m_velocity;
 }

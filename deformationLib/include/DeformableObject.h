@@ -80,18 +80,18 @@ class DeformableObject
         /// @build update function
         /// @param[_in] _timeStep 
         /// ---------------------------------------------------------
-        void update(float _timeStep);
+        void update(float _timeStep, float _stiffness);
         /// ---------------------------------------------------------
         /// @build calculate center of mass of object
         /// @param[_in] _isCurrent : determines if you calculate the current or not  
         /// ---------------------------------------------------------
         void calculateCOM(bool _isCurrent=true);
         /// ---------------------------------------------------------
-        /// @build calculate the orginal relative positions 
+        /// @build calculate the orginal relative positions for each particle
         /// ---------------------------------------------------------
         void calculateQ(); 
         /// ---------------------------------------------------------
-        /// @build calculate the current relative positions 
+        /// @build calculate the current relative positions for each particle
         /// ---------------------------------------------------------
         void calculateP();
         /// ---------------------------------------------------------
@@ -107,7 +107,10 @@ class DeformableObject
         /// linear decomposition 
         /// ---------------------------------------------------------
         void calculateR();
-        
+        /// ---------------------------------------------------------
+        /// @build calculate goal positions for each particle (set) 
+        /// ---------------------------------------------------------
+        void calculateGoalPos(); 
 
     private:
         /// ---------------------------------------------------------
@@ -125,8 +128,8 @@ class DeformableObject
         /// ---------------------------------------------------------
         /// @build symmetric matrix
         /// ---------------------------------------------------------
-        glm::mat3 m_Aqq; 
-        /// ---------------------------------------------------------
+        glm::mat3 m_Aqq{0.0f}; 
+        // ---------------------------------------------------------
         /// @build A_pq (rotational matrix)
         /// ---------------------------------------------------------
         glm::mat3 m_Apq; 
@@ -139,6 +142,10 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
+        /// ---------------------------------------------------------
+        /// @build is a parameter which simulates stifness   
+        /// ---------------------------------------------------------
+        float m_stiffness; 
 };
 
 #endif // _DEFORMALEOBJECT_H_
