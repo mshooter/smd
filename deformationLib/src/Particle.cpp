@@ -47,7 +47,7 @@ void Particle::setMass(float _mass)
 //---------------------------------------------------------------------
 void Particle::setInitPosition(glm::vec3 _initPosition)
 {
-	m_initPosition = std:;move(_initPosition);
+	m_initPosition = std::move(_initPosition);
 }
 //----------------------------------------------------------------------
 void Particle::setCurrentPosition(glm::vec3 _currentPosition)

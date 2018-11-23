@@ -1,7 +1,9 @@
 #include "DeformableObject.h"
 #include "gtest/gtest.h"
 #include "math.h"
+#include <chrono>
 
+typedef std::chrono::high_resolution_clock Clock; 
 const char* path = "models/cube.obj";
 
 TEST(DeformableObject, getAmountOfParticles)
@@ -69,4 +71,11 @@ TEST(DeformableObject, getA_qq)
     }
 }
 /// ----------------------------------------------------------------------------
+TEST(DeformableObject, calculateCurrentPos)
+{
+    Mesh3D mesh(path);
+    DeformableObject def(mesh); 
 
+    ASSERT_EQ(def.getListOfParticles().size(), (const unsigned int)8);
+
+}

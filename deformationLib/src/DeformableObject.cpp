@@ -43,7 +43,7 @@ void DeformableObject::setListOfParticles(Mesh3D _mesh)
         m_listOfParticles.emplace_back(Particle(_mesh.getVertexPositions()[i],1.0f));
     }
 }
-/// ---------------------------------------------------------
+// ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
 {
     return m_listOfParticles;
@@ -71,6 +71,13 @@ glm::mat3 DeformableObject::getA_pq()
 /// ---------------------------------------------------------
 void DeformableObject::update(float _timeStep, float _stiffness)
 {
+
+    setCurrentPos(_timeStep);
+    calculateCOM(false);
+    calculateA_pq();
+    calculateR();
+    calculateGoalPos();
+
     for(auto& part : m_listOfParticles)
     {
         part.update(_timeStep, _stiffness);
@@ -152,6 +159,7 @@ void DeformableObject::calculateR()
     // calculated R - do tests
     m_R = m_Apq * S_inverseGlm;
 }
+// in other code temp_position = currentPosition;
 /// ---------------------------------------------------------
 void DeformableObject::calculateGoalPos()
 {
@@ -161,4 +169,13 @@ void DeformableObject::calculateGoalPos()
        part.setGoalPosition(temp);
    }
 }
-
+/// ---------------------------------------------------------
+void DeformableObject::setCurrentPos(float _timeStep)
+{
+    for(auto& part : m_listOfParticles)
+    {
+        glm::vec3 temp_vel = part.getVelocity() + (part.getForce() * _timeStep)/part.getMass();
+        glm::vec3 temp_pos = part.getCurrentPosition() + temp_vel;
+        part.setCurrentPosition(temp_pos);
+    }
+}

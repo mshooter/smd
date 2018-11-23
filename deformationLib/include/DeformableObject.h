@@ -111,7 +111,10 @@ class DeformableObject
         /// @build calculate goal positions for each particle (set) 
         /// ---------------------------------------------------------
         void calculateGoalPos(); 
-
+        /// ---------------------------------------------------------
+        /// @build set current positions for each particle
+        /// ---------------------------------------------------------
+        void setCurrentPos(float _timeStep);
     private:
         /// ---------------------------------------------------------
         /// @build container that holds the particles
@@ -142,10 +145,6 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
-        /// ---------------------------------------------------------
-        /// @build is a parameter which simulates stifness   
-        /// ---------------------------------------------------------
-        float m_stiffness; 
 };
 
 #endif // _DEFORMALEOBJECT_H_

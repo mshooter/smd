@@ -133,23 +133,23 @@ class Particle
         /// ---------------------------------------------------------
         /// @build initial position of the particle
         /// ---------------------------------------------------------
-        glm::vec3 m_initPosition; 
+        glm::vec3 m_initPosition{0.0f}; 
         /// ---------------------------------------------------------
         /// @build the mass of the particle 
         /// ---------------------------------------------------------
-        float m_mass;
+        float m_mass{0.0f};
         /// ---------------------------------------------------------
         /// @build the current position of the particle 
         /// ---------------------------------------------------------
-        glm::vec3 m_currentPosition; 
+        glm::vec3 m_currentPosition{0.0f}; 
         /// ---------------------------------------------------------
         /// @build the goal position of the particle 
         /// ---------------------------------------------------------
-        glm::vec3 m_goalPosition;
+        glm::vec3 m_goalPosition{0.0f};
         /// ---------------------------------------------------------
         /// @build  velocity of the particle
         /// ---------------------------------------------------------
-        glm::vec3 m_velocity; 
+        glm::vec3 m_velocity{0.0f}; 
         /// ---------------------------------------------------------
         /// @build  inital relative coordinate, q
         /// ---------------------------------------------------------
@@ -161,7 +161,7 @@ class Particle
         /// ---------------------------------------------------------
         /// @build  force of the particle   
         /// ---------------------------------------------------------
-        glm::vec3 m_force;
+        glm::vec3 m_force{0.0f, -9.81f, 0.0f};
 };
 
 #endif // _PARTICLE_H_
