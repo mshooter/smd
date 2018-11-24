@@ -1,6 +1,5 @@
-#include "../include/DeformerNode.h"
-
-
+#include "DeformerNode.h"
+#include "DeformableObject.h"
 MTypeId DeformerNode::id(0x0100F );
 
 void* DeformerNode::creator()
