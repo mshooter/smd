@@ -1,18 +1,24 @@
 #ifndef _DEFORMERNODE_H_
 #define _DEFORMERNODE_H_
 
-#include <maya/MPxDeformerNode.h>
+#include <maya/MPxGeometryFilter.h>
+#include <maya/MTypeId.h>
+#include <maya/MItGeometry.h>
+#include <maya/MMatrix.h>
+#include <maya/MDataBlock.h>
+#include <maya/MPoint.h>
 
-class DeformerNode : public MPxDeformerNode
+
+class DeformerNode : public MPxGeometryFilter 
 {
     public:
-        DeformerNode() = default;
         static void* creator();
         static MStatus initialize();
-
+        virtual MStatus deform(MDataBlock& lock, 
+                              MItGeometry& iterator, 
+                              const MMatrix& matrix, 
+                              unsigned int multiIndex);
         static MTypeId id; 
-    protected:
-    private:
 };
 
 #endif // _DEFORMERNODE_H_
