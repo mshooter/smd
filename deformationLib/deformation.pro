@@ -1,5 +1,7 @@
 # set to buidl dynamic library 
 TEMPLATE = lib 
+CONFIG += staticlib
+
 TARGET = deformationLib 
 QT-=core gui 
 # use this directory to store all the intermediate obbject

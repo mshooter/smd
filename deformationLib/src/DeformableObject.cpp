@@ -1,5 +1,6 @@
 #include "DeformableObject.h"
 
+/// ---------------------------------------------------------
 DeformableObject::DeformableObject(Mesh3D _mesh)
 {
     // initialize the list of particles 
@@ -36,6 +37,11 @@ void DeformableObject::initialize(Mesh3D _mesh)
     calculateA_qq();
 }
 /// ---------------------------------------------------------
+void DeformableObject::setListOfParticles(glm::vec3 _vert)
+{
+    m_listOfParticles.emplace_back(Particle(_vert, 1.0f));
+}
+// ---------------------------------------------------------
 void DeformableObject::setListOfParticles(Mesh3D _mesh)
 {
     for(int i=0; i < _mesh.getNumberOfVertex(); ++i)

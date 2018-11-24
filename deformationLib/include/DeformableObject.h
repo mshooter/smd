@@ -55,6 +55,10 @@ class DeformableObject
         /// ---------------------------------------------------------
         /// @build set the particle list 
         /// ---------------------------------------------------------
+        void setListOfParticles(glm::vec3 _vert);
+        /// ---------------------------------------------------------
+        /// @build set the particle list 
+        /// ---------------------------------------------------------
         void setListOfParticles(Mesh3D _mesh);
         /// ---------------------------------------------------------
         /// @build get the particle list 

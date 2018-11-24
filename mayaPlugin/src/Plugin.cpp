@@ -9,7 +9,7 @@ MStatus initializePlugin(MObject obj)
             DeformerNode::id,
             &DeformerNode::creator, 
             &DeformerNode::initialize,
-            MPxNode::kGeometryFilter);
+            MPxNode::kDeformerNode);
     if(!status)
     {
         status.perror("unable to register command");
