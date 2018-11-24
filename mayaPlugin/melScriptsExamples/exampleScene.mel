@@ -1,0 +1,14 @@
+// Create a plane and a sphere
+polyPlane -ch on -o on -w 10 -h 10 -sw 1 -sh 1 -cuv 2;
+polyTorus;
+//polyCube;
+move -r 0 2.0 0;
+
+// Create dynamics stuff 
+select -r pTorus1;
+
+// Put a deformer node on the sphere
+select -r pTorus1;
+deformer -type DeformerNode;
+
+connectAttr -f time1.outTime DeformerNode1.CurrentTime;

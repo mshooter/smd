@@ -5,7 +5,7 @@ MStatus initializePlugin(MObject obj)
 {
     
     MFnPlugin plugin(obj, "Moira Shooter", "1.0", "Any");
-    MStatus status = plugin.registerNode("smd",
+    MStatus status = plugin.registerNode("DeformerNode",
             DeformerNode::id,
             &DeformerNode::creator, 
             &DeformerNode::initialize,

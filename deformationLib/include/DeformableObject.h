@@ -119,6 +119,7 @@ class DeformableObject
         /// @build set current positions for each particle
         /// ---------------------------------------------------------
         void setCurrentPos(float _timeStep);
+        void setStiffness(float _stiffness);
     private:
         /// ---------------------------------------------------------
         /// @build container that holds the particles
@@ -149,6 +150,7 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
+        float m_stiffness; 
 };
 
 #endif // _DEFORMALEOBJECT_H_
