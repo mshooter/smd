@@ -4,3 +4,5 @@ maya:
 https://github.com/kbladin/Maya_Plugin_Hello_World
 import maya comands as cmds 
 cmds.createNode('smd');
+
+https://help.autodesk.com/view/MAYAUL/2017/ENU/?guid=__cpp_ref_identity_geom_filter_2identity_geom_filter_8cpp_example_html
