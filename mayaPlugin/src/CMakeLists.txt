@@ -16,7 +16,7 @@ endif()
 # eigen
 if(MACOS)
     set(EIGEN3_ROOT /usr/local/include/eigen3)
-    find_package(Eigen REQUIRED)
+    find_package(Eigen3 REQUIRED)
     include_directories(${EIGEN3_INCLUDE_DIR})
 elseif(LINUX)
     set(EIGEN3_ROOT /public/devel/2018/include/eigen3)
