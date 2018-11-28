@@ -1,6 +1,5 @@
 # set to buidl dynamic library 
 TEMPLATE = lib 
-CONFIG += staticlib
 
 TARGET = deformationLib 
 QT-=core gui 
@@ -10,7 +9,7 @@ OBJECTS_DIR = obj
 # not an app 
 CONFIG += console c++14
 CONFIG -= app_bundle 
-
+CONFIG += staticlib
 DESTDIR = $$PWD/lib
 
 # set up C++ flags for this compliation when using the host compiler 
