@@ -1,5 +1,5 @@
 #include "DeformerNode.h"
-#include "/home/s4928793/smd/deformationLib/include/DeformableObject.h"
+#include "DeformableObject.h"
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MFnTypedAttribute.h>
