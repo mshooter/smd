@@ -8,7 +8,7 @@
 #include <maya/MDataBlock.h>
 #include <maya/MPoint.h>
 #include <maya/MTime.h>
-
+#include <iostream>
 #include "DeformableObject.h"
 
 class DeformerNode : public MPxDeformerNode

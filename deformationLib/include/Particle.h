@@ -26,9 +26,7 @@ class Particle
         /// ---------------------------------------------------------
         /// @build constructor
         /// @param[_in] _initPos : initial position of the particle
-        /// @param[_in] _mass : the mass of the paricle 
         /// ---------------------------------------------------------
-        Particle(glm::vec3 _initPos, float _mass) : m_initPosition(_initPos), m_mass(_mass) {}
         Particle(glm::vec3 _originalPositions);
         /// ---------------------------------------------------------
         /// @default copy constructor 
@@ -129,28 +127,33 @@ class Particle
         /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
         void update(float _timeStep);       
+        /// ---------------------------------------------------------
+        /// @build update method for individial method
+        /// @param[_in] _timeStep : the time for a 'frame'
+        /// @param[_in] _stiffness : stiffness of the deformable object
+        /// ---------------------------------------------------------
         void shapeMatchUpdate(float _timeStep, float _stiffness);
     private:
         /// ---------------------------------------------------------
         /// @build initial position of the particle
         /// ---------------------------------------------------------
-        glm::vec3 m_initPosition{0.0f}; 
+        glm::vec3 m_initPosition; 
         /// ---------------------------------------------------------
         /// @build the mass of the particle 
         /// ---------------------------------------------------------
-        float m_mass{1.0f};
+        float m_mass;
         /// ---------------------------------------------------------
         /// @build the current position of the particle 
         /// ---------------------------------------------------------
-        glm::vec3 m_currentPosition{0.0f}; 
+        glm::vec3 m_currentPosition; 
         /// ---------------------------------------------------------
         /// @build the goal position of the particle 
         /// ---------------------------------------------------------
-        glm::vec3 m_goalPosition{0.0f};
+        glm::vec3 m_goalPosition;
         /// ---------------------------------------------------------
         /// @build  velocity of the particle
         /// ---------------------------------------------------------
-        glm::vec3 m_velocity{0.0f}; 
+        glm::vec3 m_velocity; 
         /// ---------------------------------------------------------
         /// @build  inital relative coordinate, q
         /// ---------------------------------------------------------
@@ -162,7 +165,7 @@ class Particle
         /// ---------------------------------------------------------
         /// @build  force of the particle   
         /// ---------------------------------------------------------
-        glm::vec3 m_force{0.0f, -9.81f, 0.0f};
+        glm::vec3 m_force;
 };
 
 #endif // _PARTICLE_H_

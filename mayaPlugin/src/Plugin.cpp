@@ -1,6 +1,5 @@
-#include "../include/DeformerNode.h"
+#include "DeformerNode.h"
 #include <maya/MFnPlugin.h>
-
 MStatus initializePlugin(MObject obj)
 {
     

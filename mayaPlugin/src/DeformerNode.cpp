@@ -63,10 +63,10 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
 {
     // if first frame set up the values 
     MTime time_now = block.inputValue(CurrentTime).asTime();
-    if(isFirstFrame == time_now.value() == 1)
+    if(isFirstFrame || time_now.value() == 1)
     {
-        // if there is a particle system delete it
-        PreviousTime = block.inputValue(CurrentTime).asTime();
+       if(ps)
+           delete ps;
         std::vector<glm::vec3> initial_positions_list; 
         // initial velocity ? init 
         // iterate through ever point of the mesh and set it to the initial position 
@@ -81,7 +81,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         ps = new DeformableObject(initial_positions_list);
         // set firstFrame to false 
         isFirstFrame = false; 
-        return MS::kSuccess;
+        //return MS::kSuccess;
     }
     else
     {
@@ -91,24 +91,19 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         PreviousTime = time_now;
         // for particle in deformable object
         // set attributes
-
+         
         // update positions
-        if(ps)
-        {
-            float deltaTimeValue = delta_time.value();
-            int updatesPerTimeStep = 2; 
-            for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
-            {
-                // update and shape match  
-                ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
-                ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
-            }
-        }
-        else
-        {
-            MGlobal::displayInfo("ps == NULL");
-        }
-        
+       if(ps)
+       {
+          float deltaTimeValue = delta_time.value();
+          int updatesPerTimeStep = 2; 
+          for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
+          {
+              // update and shape match  
+              ps->update(1/ 24.0 / updatesPerTimeStep * SIGN(deltaTimeValue));
+              ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
+          }
+       }
 
         // update output positions 
         MMatrix localToWoldMatrixInv = localToWorldMatrix.inverse();
@@ -116,12 +111,10 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         {
             int idx = iter.index();
             glm::vec3 particlePos = ps->getListOfParticles()[idx].getCurrentPosition();
-            MPoint newPos(particlePos[0], particlePos[1], particlePos[2]); 
-            // tranform back to model 
-            iter.setPosition(newPos *localToWoldMatrixInv);
+            MPoint newPos(particlePos.x, particlePos.y, particlePos.z); 
+            iter.setPosition(newPos * localToWoldMatrixInv);
         }
     }
-    // else update 
     return MS::kSuccess;
 }
 ///-----------------------------------------

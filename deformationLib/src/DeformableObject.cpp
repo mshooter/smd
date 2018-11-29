@@ -1,24 +1,6 @@
 #include "DeformableObject.h"
 
 /// ---------------------------------------------------------
-DeformableObject::DeformableObject(Mesh3D _mesh)
-{
-    // initialize the list of particles 
-    // set the rest positions for the particle system 
-    // loop over the vertex positions and create a list of particles 
-    for(int i = 0; i < _mesh.getNumberOfVertex(); ++i)
-    {
-       m_listOfParticles.emplace_back(Particle(_mesh.getVertexPositions()[i], 1.0f)); 
-    }
-
-    // calculate original center of mass 
-    calculateCOM();
-    // calculate the original relative positions 
-    calculateQ();
-    // calculate symmetric matrix = constant 
-    calculateA_qq();
-}
-/// ---------------------------------------------------------
 DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions)
 {
     // reset all attributes
@@ -29,37 +11,6 @@ DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions)
     }
     // original center of mass
     m_originalCenterOfMass = computeCOM();
-}
-/// ---------------------------------------------------------
-void DeformableObject::initialize(Mesh3D _mesh)
-{
-    // initialize the list of particles 
-    // set the rest positions for the particle system 
-    // loop over the vertex positions and create a list of particles 
-    for(int i = 0; i < _mesh.getNumberOfVertex(); ++i)
-    {
-       m_listOfParticles.emplace_back(Particle(_mesh.getVertexPositions()[i], 1.0f)); 
-    }
-
-    // calculate original center of mass 
-    calculateCOM();
-    // calculate the original relative positions 
-    calculateQ();
-    // calculate symmetric matrix = constant 
-    calculateA_qq();
-}
-/// ---------------------------------------------------------
-void DeformableObject::setListOfParticles(glm::vec3 _vert)
-{
-    m_listOfParticles.emplace_back(Particle(_vert, 1.0f));
-}
-// ---------------------------------------------------------
-void DeformableObject::setListOfParticles(Mesh3D _mesh)
-{
-    for(int i=0; i < _mesh.getNumberOfVertex(); ++i)
-    {
-        m_listOfParticles.emplace_back(Particle(_mesh.getVertexPositions()[i],1.0f));
-    }
 }
 // ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
@@ -75,11 +26,6 @@ glm::vec3 DeformableObject::getOriginalCOM()
 glm::vec3 DeformableObject::getCurrentCOM()
 {
     return m_currentCenterOfMass; 
-}
-/// ---------------------------------------------------------
-glm::mat3 DeformableObject::getA_qq()
-{
-    return m_Aqq; 
 }
 /// ---------------------------------------------------------
 glm::mat3 DeformableObject::getA_pq()
@@ -114,12 +60,12 @@ void DeformableObject::shapematching(float _timeStep)
     // calculate R 
     calculateR();
     // if rotaton has reflection, reflect back
-    if(glm::determinant(m_R) < 0)
-    {
-        m_R[0][2] = -m_R[0][2];
-        m_R[1][2] = -m_R[1][2];
-        m_R[2][2] = -m_R[1][2];
-    }
+//   if(glm::determinant(m_R) < 0)
+//   {
+//       m_R[0][2] = -m_R[0][2];
+//       m_R[1][2] = -m_R[1][2];
+//       m_R[2][2] = -m_R[1][2];
+//   }
     // compute target positions for rigid transform 
     for(auto& particle : m_listOfParticles)
     {
@@ -131,18 +77,6 @@ void DeformableObject::shapematching(float _timeStep)
     {
         particle.shapeMatchUpdate(_timeStep, 1.0f);
     }
-}
-/// ---------------------------------------------------------
-void DeformableObject::calculateCOM(bool _isCurrent)
-{
-    float sumMass = 0.0f; 
-    glm::vec3 sumPos{0.0f};
-    for(auto& part : m_listOfParticles)
-    {
-        sumMass += part.getMass();
-        sumPos += part.getMass() * ((_isCurrent) ? part.getInitPosition() : part.getCurrentPosition());
-    }
-    ((_isCurrent) ? m_originalCenterOfMass : m_currentCenterOfMass) = sumPos/sumMass; 
 }
 /// ---------------------------------------------------------
 glm::vec3 DeformableObject::computeCOM()
@@ -171,22 +105,6 @@ void DeformableObject::calculateP()
     {
         part.setP(part.getCurrentPosition() - m_currentCenterOfMass);
     }
-}
-/// ---------------------------------------------------------
-void DeformableObject::calculateA_qq()
-{
-    // sum of (mass * q_i * (q_i)^T)
-    // 3 x 1 * 1 x 3 = 3 x 3  
-    // row * column
-    // creates a matrix 
-    std::vector<Particle> list = m_listOfParticles;
-    
-    for(auto& part : m_listOfParticles)
-    {
-        m_Aqq += part.getMass() * glm::outerProduct(part.getQ(), part.getQ());        
-    }
-
-    m_Aqq = glm::inverse(m_Aqq);
 }
 /// ---------------------------------------------------------
 void DeformableObject::calculateA_pq()
@@ -229,14 +147,4 @@ void DeformableObject::calculateGoalPos()
        glm::vec3 temp = m_R * (part.getInitPosition() - m_originalCenterOfMass ) + m_currentCenterOfMass;
        part.setGoalPosition(temp);
    }
-}
-/// ---------------------------------------------------------
-void DeformableObject::setCurrentPos(float _timeStep)
-{
-    for(auto& part : m_listOfParticles)
-    {
-        glm::vec3 temp_vel = part.getVelocity() + (part.getForce() * _timeStep)/part.getMass();
-        glm::vec3 temp_pos = part.getCurrentPosition() + temp_vel;
-        part.setCurrentPosition(temp_pos);
-    }
 }

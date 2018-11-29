@@ -1,7 +1,8 @@
 #include "Particle.h"
 
 Particle::Particle(glm::vec3 _originalPositions)
-{
+{   
+    m_mass = 1.0f;
     m_initPosition = _originalPositions;
     m_currentPosition = _originalPositions; 
     m_goalPosition = _originalPositions; 
