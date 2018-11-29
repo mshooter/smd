@@ -3,6 +3,7 @@
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MAnimControl.h>
+#include <maya/MGlobal.h>
 #define SIGN(a) (a < 0 ? -1 : 1)
 
 MTypeId DeformerNode::id(0x0100F);
@@ -64,6 +65,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
     MTime time_now = block.inputValue(CurrentTime).asTime();
     if(isFirstFrame == time_now.value() == 1)
     {
+        // if there is a particle system delete it
         PreviousTime = block.inputValue(CurrentTime).asTime();
         std::vector<glm::vec3> initial_positions_list; 
         // initial velocity ? init 
@@ -75,8 +77,8 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             glm::vec3 pposition(vertexPosition.x, vertexPosition.y, vertexPosition.z);
             initial_positions_list.emplace_back(pposition);
         }
-
-        // create a deformable object (particle system)
+        // create particle system - deformable object
+        ps = new DeformableObject(initial_positions_list);
         // set firstFrame to false 
         isFirstFrame = false; 
         return MS::kSuccess;
@@ -88,19 +90,25 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         MTime delta_time = time_now - PreviousTime; 
         PreviousTime = time_now;
         // for particle in deformable object
-        for(auto& particle : ps->getListOfParticles() )
-        {
-            particle.setMass(block.inputValue(Mass).asFloat());
-
-        }
+        // set attributes
 
         // update positions
-        float deltaTimeValue = delta_time.value();
-        int updatesPerTimeStep = 2; 
-        for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
+        if(ps)
         {
-           // update and shape match  
+            float deltaTimeValue = delta_time.value();
+            int updatesPerTimeStep = 2; 
+            for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
+            {
+                // update and shape match  
+                ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
+                ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
+            }
         }
+        else
+        {
+            MGlobal::displayInfo("ps == NULL");
+        }
+        
 
         // update output positions 
         MMatrix localToWoldMatrixInv = localToWorldMatrix.inverse();

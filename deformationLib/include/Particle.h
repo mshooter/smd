@@ -4,7 +4,7 @@
 
 #include "glm/glm.hpp"
 #include <iostream>
-
+#include <vector>
 /// \author Moira Shooter
 /// \version 1.0
 /// \date 17 November 2018
@@ -29,6 +29,7 @@ class Particle
         /// @param[_in] _mass : the mass of the paricle 
         /// ---------------------------------------------------------
         Particle(glm::vec3 _initPos, float _mass) : m_initPosition(_initPos), m_mass(_mass) {}
+        Particle(glm::vec3 _originalPositions);
         /// ---------------------------------------------------------
         /// @default copy constructor 
         /// ---------------------------------------------------------
@@ -127,8 +128,8 @@ class Particle
         /// @param[_in] _timeStep : the time for a 'frame'
         /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
-        void update(float _timeStep, float _stiffness);       
-
+        void update(float _timeStep);       
+        void shapeMatchUpdate(float _timeStep, float _stiffness);
     private:
         /// ---------------------------------------------------------
         /// @build initial position of the particle
@@ -137,7 +138,7 @@ class Particle
         /// ---------------------------------------------------------
         /// @build the mass of the particle 
         /// ---------------------------------------------------------
-        float m_mass{0.0f};
+        float m_mass{1.0f};
         /// ---------------------------------------------------------
         /// @build the current position of the particle 
         /// ---------------------------------------------------------

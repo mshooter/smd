@@ -28,7 +28,7 @@ class DeformableObject
         /// state
         /// ---------------------------------------------------------
         DeformableObject(Mesh3D _mesh);  
-        DeformableObject(std::vector<glm::vec3> _initPositions, glm::vec3 _initVelocity);
+        DeformableObject(std::vector<glm::vec3> _originalPositions);
         /// ---------------------------------------------------------
         /// @build copy constructor 
         /// ---------------------------------------------------------
@@ -85,12 +85,14 @@ class DeformableObject
         /// @build update function
         /// @param[_in] _timeStep 
         /// ---------------------------------------------------------
-        void update(float _timeStep, float _stiffness);
+        void update(float _timeStep);
+        void shapematching(float _timeStep);
         /// ---------------------------------------------------------
         /// @build calculate center of mass of object
         /// @param[_in] _isCurrent : determines if you calculate the current or not  
         /// ---------------------------------------------------------
         void calculateCOM(bool _isCurrent=true);
+        glm::vec3 computeCOM();
         /// ---------------------------------------------------------
         /// @build calculate the orginal relative positions for each particle
         /// ---------------------------------------------------------

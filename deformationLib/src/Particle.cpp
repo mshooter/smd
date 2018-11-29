@@ -1,5 +1,14 @@
 #include "Particle.h"
 
+Particle::Particle(glm::vec3 _originalPositions)
+{
+    m_initPosition = _originalPositions;
+    m_currentPosition = _originalPositions; 
+    m_goalPosition = _originalPositions; 
+    m_velocity = glm::vec3{0.0f};
+    m_force = glm::vec3{0.0f};
+}
+//----------------------------------------------------------------------
 float Particle::getMass()
 {
 	return m_mass;
@@ -89,9 +98,20 @@ void Particle::reset()
     m_velocity = glm::vec3{0.0f};
 }
 //---------------------------------------------------------------------
-void Particle::update(float _timeStep, float _stiffness)
+void Particle::update(float _timeStep)
 {
-    // basic algorithm
-    m_velocity += _stiffness *( m_goalPosition - m_currentPosition ) / _timeStep + (_timeStep / m_mass) * m_force; 
+    // update force
+    m_force = glm::vec3(0, -9.81f, 0.0f) * m_mass;
+    // add collision
+    // update velocity 
+    m_velocity += m_force / m_mass * _timeStep;
+    m_force = glm::vec3{0.0f};
+    // update position 
     m_currentPosition += _timeStep * m_velocity;
+}
+//---------------------------------------------------------------------
+void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
+{
+    m_velocity += _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
+    m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }

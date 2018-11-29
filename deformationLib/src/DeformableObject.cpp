@@ -19,7 +19,17 @@ DeformableObject::DeformableObject(Mesh3D _mesh)
     calculateA_qq();
 }
 /// ---------------------------------------------------------
-
+DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions)
+{
+    // reset all attributes
+    m_listOfParticles.resize(_originalPositions.size());
+    for(unsigned int i = 0 ; i < _originalPositions.size(); ++i)
+    {
+        m_listOfParticles.emplace_back(Particle(_originalPositions[i]));
+    }
+    // original center of mass
+    m_originalCenterOfMass = computeCOM();
+}
 /// ---------------------------------------------------------
 void DeformableObject::initialize(Mesh3D _mesh)
 {
@@ -77,18 +87,49 @@ glm::mat3 DeformableObject::getA_pq()
     return m_Apq;
 }
 /// ---------------------------------------------------------
-void DeformableObject::update(float _timeStep, float _stiffness)
+void DeformableObject::update(float _timeStep)
 {
-
-    setCurrentPos(_timeStep);
-    calculateCOM(false);
-    calculateA_pq();
-    calculateR();
-    calculateGoalPos();
-
     for(auto& part : m_listOfParticles)
     {
-        part.update(_timeStep, _stiffness);
+        part.update(_timeStep);
+    }
+}
+/// ---------------------------------------------------------
+void DeformableObject::shapematching(float _timeStep)
+{
+    glm::vec3 centerOfMass; 
+    
+    centerOfMass = computeCOM();
+    for(auto& particle : m_listOfParticles)
+    {
+        particle.setQ(particle.getCurrentPosition() - centerOfMass);
+        particle.setP(particle.getInitPosition() - m_originalCenterOfMass);
+        
+    }
+    // calculate matrices
+    for(auto& particle : m_listOfParticles)
+    {
+        m_Apq += particle.getMass() * glm::outerProduct(particle.getQ(), particle.getP());
+    }
+    // calculate R 
+    calculateR();
+    // if rotaton has reflection, reflect back
+    if(glm::determinant(m_R) < 0)
+    {
+        m_R[0][2] = -m_R[0][2];
+        m_R[1][2] = -m_R[1][2];
+        m_R[2][2] = -m_R[1][2];
+    }
+    // compute target positions for rigid transform 
+    for(auto& particle : m_listOfParticles)
+    {
+        // don't forget te rotational matrix
+        particle.setGoalPosition(m_R * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
+    }
+
+    for(auto& particle : m_listOfParticles)
+    {
+        particle.shapeMatchUpdate(_timeStep, 1.0f);
     }
 }
 /// ---------------------------------------------------------
@@ -102,6 +143,18 @@ void DeformableObject::calculateCOM(bool _isCurrent)
         sumPos += part.getMass() * ((_isCurrent) ? part.getInitPosition() : part.getCurrentPosition());
     }
     ((_isCurrent) ? m_originalCenterOfMass : m_currentCenterOfMass) = sumPos/sumMass; 
+}
+/// ---------------------------------------------------------
+glm::vec3 DeformableObject::computeCOM()
+{
+    glm::vec3 com{0.0f};
+    float massSum = 0.0f;
+    for(auto& particle : m_listOfParticles)
+    {
+        com += particle.getCurrentPosition() * particle.getMass();
+        massSum += particle.getMass();
+    }
+    return (com/massSum);
 }
 /// ---------------------------------------------------------
 void DeformableObject::calculateQ()
