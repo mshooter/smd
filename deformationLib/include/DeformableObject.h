@@ -28,6 +28,7 @@ class DeformableObject
         /// state
         /// ---------------------------------------------------------
         DeformableObject(Mesh3D _mesh);  
+        DeformableObject(std::vector<glm::vec3> _initPositions, glm::vec3 _initVelocity);
         /// ---------------------------------------------------------
         /// @build copy constructor 
         /// ---------------------------------------------------------

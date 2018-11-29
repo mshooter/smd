@@ -9,6 +9,8 @@
 #include <maya/MPoint.h>
 #include <maya/MTime.h>
 
+#include "DeformableObject.h"
+
 class DeformerNode : public MPxDeformerNode
 {
     public:
@@ -21,10 +23,16 @@ class DeformerNode : public MPxDeformerNode
         static MTypeId id;
 
         // Attributes
-        static MObject m_stiffness; 
-        static bool m_isFirstFrame; 
+        static MObject Stiffness; 
+        static MObject GravityMagnitude; 
+        static MObject GravityDirection; 
+        static MObject Mass; 
         static MObject CurrentTime;
-        static MTime m_previousTime;
+        static bool isFirstFrame; 
+        static MTime PreviousTime;
+        
+        static DeformableObject* ps; 
 };
+
 
 #endif // _DEFORMERNODE_H_

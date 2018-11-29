@@ -19,6 +19,8 @@ DeformableObject::DeformableObject(Mesh3D _mesh)
     calculateA_qq();
 }
 /// ---------------------------------------------------------
+
+/// ---------------------------------------------------------
 void DeformableObject::initialize(Mesh3D _mesh)
 {
     // initialize the list of particles 

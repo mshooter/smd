@@ -1,17 +1,24 @@
 #include "DeformerNode.h"
-#include "DeformableObject.h"
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MAnimControl.h>
 #define SIGN(a) (a < 0 ? -1 : 1)
-MTypeId DeformerNode::id(0x0100F );
-MObject DeformerNode::m_stiffness;
-bool DeformerNode::m_isFirstFrame;
-MTime DeformerNode::m_previousTime;
-MObject DeformerNode::CurrentTime; 
-DeformableObject defo;
 
+MTypeId DeformerNode::id(0x0100F);
+MObject DeformerNode::Stiffness;
+MObject DeformerNode::GravityMagnitude;
+MObject DeformerNode::GravityDirection;
+MObject DeformerNode::Mass; 
+
+MObject DeformerNode::CurrentTime; 
+bool DeformerNode::isFirstFrame;
+MTime DeformerNode::PreviousTime;
+
+DeformableObject* DeformerNode::ps; 
+
+
+///-----------------------------------------
 void* DeformerNode::creator()
 {
     return new DeformerNode;
@@ -20,7 +27,7 @@ void* DeformerNode::creator()
 MStatus DeformerNode::initialize()
 {
     // set up attributes 
-    m_isFirstFrame = true; 
+    isFirstFrame = true; 
     MFnTypedAttribute tAttr;
     MFnNumericAttribute nAttr;
     MFnUnitAttribute uAttr; 
@@ -29,49 +36,85 @@ MStatus DeformerNode::initialize()
     uAttr.setDefault(MAnimControl::currentTime().as(MTime::kFilm));
     uAttr.setChannelBox(true);
 
-    m_stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kDouble, 1.0);
+    Stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kDouble, 1.0);
+    nAttr.setStorable(true);
     nAttr.setChannelBox(true);
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
+    
+    Mass = nAttr.create("Mass", "mas", MFnNumericData::kDouble, 1.0);
+    nAttr.setDefault(1.0);
+    nAttr.setChannelBox(true);
+    nAttr.setMin(0.0);
+    nAttr.setMax(10.0);
     // add attributes
     addAttribute(CurrentTime);
-    addAttribute(m_stiffness);
-    // affecting 
+    addAttribute(Stiffness);
+    addAttribute(Mass);
+    // affecting - dependencies 
     attributeAffects(CurrentTime, outputGeom);
-    attributeAffects(m_stiffness, outputGeom);
+    attributeAffects(Stiffness, outputGeom);
+    attributeAffects(Mass, outputGeom);
     return MStatus::kSuccess;
 }
 ///-----------------------------------------
 MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix& localToWorldMatrix, unsigned int multiIndex)
 {
-    /// @arugments
-    /// block : data block of the node 
-    /// iter : iterator for the geometry to be deformed 
-    /// m : matrix to transform the point into world space
-    /// multiIndex : the index of geometry that we are deforming 
-    // get the values from the user
+    // if first frame set up the values 
     MTime time_now = block.inputValue(CurrentTime).asTime();
-    MTime delta_time = time_now - m_previousTime;
-    m_previousTime = time_now; 
-    MStatus returnStatus;
-    // not using envelope would be weird - own pp 
-    // update 
-    int delta_timeV = delta_time.value();
-    int delta_timeTs = 2; 
-    for(int i = 0 ; i < abs(delta_timeV) * delta_timeTs; ++i)
+    if(isFirstFrame == time_now.value() == 1)
     {
-        defo.update(1 / 24.0f / delta_timeTs * SIGN(delta_timeV), block.inputValue(m_stiffness).asFloat());
+        PreviousTime = block.inputValue(CurrentTime).asTime();
+        std::vector<glm::vec3> initial_positions_list; 
+        // initial velocity ? init 
+        // iterate through ever point of the mesh and set it to the initial position 
+        for(; !iter.isDone(); iter.next())
+        {
+            // posintions in world coordinates 
+            MPoint vertexPosition = iter.position() * localToWorldMatrix; 
+            glm::vec3 pposition(vertexPosition.x, vertexPosition.y, vertexPosition.z);
+            initial_positions_list.emplace_back(pposition);
+        }
+
+        // create a deformable object (particle system)
+        // set firstFrame to false 
+        isFirstFrame = false; 
+        return MS::kSuccess;
     }
-    // update output pos 
-    MMatrix localToWorldInv = localToWorldMatrix.inverse();
-    for(; iter.isDone(); iter.next())
+    else
     {
-        int idx = iter.index();
-        glm::vec3 p = defo.getListOfParticles()[idx].getCurrentPosition();
-        MPoint newPos(p[0], p[1], p[3]);
-        iter.setPosition(newPos * localToWorldInv);
+        // fetch attriute values 
+        time_now = block.inputValue(CurrentTime).asTime(); 
+        MTime delta_time = time_now - PreviousTime; 
+        PreviousTime = time_now;
+        // for particle in deformable object
+        for(auto& particle : ps->getListOfParticles() )
+        {
+            particle.setMass(block.inputValue(Mass).asFloat());
+
+        }
+
+        // update positions
+        float deltaTimeValue = delta_time.value();
+        int updatesPerTimeStep = 2; 
+        for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
+        {
+           // update and shape match  
+        }
+
+        // update output positions 
+        MMatrix localToWoldMatrixInv = localToWorldMatrix.inverse();
+        for(; !iter.isDone(); iter.next())
+        {
+            int idx = iter.index();
+            glm::vec3 particlePos = ps->getListOfParticles()[idx].getCurrentPosition();
+            MPoint newPos(particlePos[0], particlePos[1], particlePos[2]); 
+            // tranform back to model 
+            iter.setPosition(newPos *localToWoldMatrixInv);
+        }
     }
-    return returnStatus;
+    // else update 
+    return MS::kSuccess;
 }
 ///-----------------------------------------
 
