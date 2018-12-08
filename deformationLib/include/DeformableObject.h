@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <Eigen/Dense>
-#include "Mesh3D.h"
 #include "Particle.h"
 /// \author Moira Shooter
 /// \version 1.0

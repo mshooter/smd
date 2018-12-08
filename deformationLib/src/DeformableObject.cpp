@@ -4,7 +4,6 @@
 DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions)
 {
     // reset all attributes
-    m_listOfParticles.resize(_originalPositions.size());
     for(unsigned int i = 0 ; i < _originalPositions.size(); ++i)
     {
         m_listOfParticles.emplace_back(Particle(_originalPositions[i]));
@@ -44,7 +43,6 @@ void DeformableObject::update(float _timeStep)
 void DeformableObject::shapematching(float _timeStep)
 {
     glm::vec3 centerOfMass; 
-    
     centerOfMass = computeCOM();
     for(auto& particle : m_listOfParticles)
     {
@@ -72,7 +70,7 @@ void DeformableObject::shapematching(float _timeStep)
         // don't forget te rotational matrix
         particle.setGoalPosition(m_R * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
     }
-
+    // add shape mathcing by translatinjg poositions towards goal positions
     for(auto& particle : m_listOfParticles)
     {
         particle.shapeMatchUpdate(_timeStep, 1.0f);
