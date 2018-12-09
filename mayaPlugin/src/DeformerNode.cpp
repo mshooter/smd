@@ -70,6 +70,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         std::vector<glm::vec3> initial_positions_list; 
         // initial velocity ? init 
         // iterate through ever point of the mesh and set it to the initial position 
+        PreviousTime = block.inputValue(CurrentTime).asTime();
         for(; !iter.isDone(); iter.next())
         {
             // posintions in world coordinates 
@@ -81,7 +82,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         ps = new DeformableObject(initial_positions_list);
         // set firstFrame to false 
         isFirstFrame = false; 
-        //return MS::kSuccess;
+        return MS::kSuccess;
     }
     else
     {
@@ -91,7 +92,6 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         PreviousTime = time_now;
         // for particle in deformable object
         // set attributes
-         
         // update positions
        if(ps)
        {
@@ -100,9 +100,13 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
           for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
           {
               // update and shape match  
-              ps->update(1/ 24.0 / updatesPerTimeStep * SIGN(deltaTimeValue));
+              ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
               ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
           }
+       }
+       else
+       {
+           MGlobal::displayInfo("ps==NULL");
        }
 
         // update output positions 

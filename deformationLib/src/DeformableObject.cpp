@@ -22,16 +22,6 @@ glm::vec3 DeformableObject::getOriginalCOM()
     return m_originalCenterOfMass;
 }
 /// ---------------------------------------------------------
-glm::vec3 DeformableObject::getCurrentCOM()
-{
-    return m_currentCenterOfMass; 
-}
-/// ---------------------------------------------------------
-glm::mat3 DeformableObject::getA_pq()
-{
-    return m_Apq;
-}
-/// ---------------------------------------------------------
 void DeformableObject::update(float _timeStep)
 {
     for(auto& part : m_listOfParticles)
@@ -58,12 +48,12 @@ void DeformableObject::shapematching(float _timeStep)
     // calculate R 
     calculateR();
     // if rotaton has reflection, reflect back
-//   if(glm::determinant(m_R) < 0)
-//   {
-//       m_R[0][2] = -m_R[0][2];
-//       m_R[1][2] = -m_R[1][2];
-//       m_R[2][2] = -m_R[1][2];
-//   }
+//  if(glm::determinant(m_R) < 0)
+//  {
+//      m_R[0][2] = -m_R[0][2];
+//      m_R[1][2] = -m_R[1][2];
+//      m_R[2][2] = -m_R[1][2];
+//  }
     // compute target positions for rigid transform 
     for(auto& particle : m_listOfParticles)
     {
@@ -89,33 +79,6 @@ glm::vec3 DeformableObject::computeCOM()
     return (com/massSum);
 }
 /// ---------------------------------------------------------
-void DeformableObject::calculateQ()
-{
-    for(auto& part: m_listOfParticles)
-    {
-        part.setQ(part.getInitPosition() - m_originalCenterOfMass);
-    }
-}
-/// ---------------------------------------------------------
-void DeformableObject::calculateP()
-{
-    for(auto& part : m_listOfParticles)
-    {
-        part.setP(part.getCurrentPosition() - m_currentCenterOfMass);
-    }
-}
-/// ---------------------------------------------------------
-void DeformableObject::calculateA_pq()
-{
-    // sum of (mass * p_i * (q_i)^T)
-    // 3 x 1 * 3 * 1 = 3x3 
-    // Treats the first parameter c as a column vector and the second parameter r as a row vector and does a linear algebraic matrix multiply c * r.
-    for(auto& part : m_listOfParticles)
-    {
-        m_Apq += part.getMass() * glm::outerProduct(part.getQ(), part.getP());
-    }
-}
-/// ---------------------------------------------------------
 void DeformableObject::calculateR()
 {
     // might use eigen as a library
@@ -135,14 +98,4 @@ void DeformableObject::calculateR()
     }
     // calculated R - do tests
     m_R = m_Apq * S_inverseGlm;
-}
-// in other code temp_position = currentPosition;
-/// ---------------------------------------------------------
-void DeformableObject::calculateGoalPos()
-{
-   for(auto& part : m_listOfParticles)
-   {
-       glm::vec3 temp = m_R * (part.getInitPosition() - m_originalCenterOfMass ) + m_currentCenterOfMass;
-       part.setGoalPosition(temp);
-   }
 }
