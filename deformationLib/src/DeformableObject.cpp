@@ -30,7 +30,7 @@ void DeformableObject::update(float _timeStep)
     }
 }
 /// ---------------------------------------------------------
-void DeformableObject::shapematching(float _timeStep)
+void DeformableObject::shapematching(float _timeStep, float _stiffness)
 {
     glm::vec3 centerOfMass; 
     centerOfMass = computeCOM();
@@ -63,7 +63,7 @@ void DeformableObject::shapematching(float _timeStep)
     // add shape mathcing by translatinjg poositions towards goal positions
     for(auto& particle : m_listOfParticles)
     {
-        particle.shapeMatchUpdate(_timeStep, 1.0f);
+        particle.shapeMatchUpdate(_timeStep, _stiffness);
     }
 }
 /// ---------------------------------------------------------

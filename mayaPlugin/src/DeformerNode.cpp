@@ -101,7 +101,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
           {
               // update and shape match  
               ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
-              ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
+              ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), block.inputValue(Stiffness).asFloat());
           }
        }
        else

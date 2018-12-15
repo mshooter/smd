@@ -104,6 +104,11 @@ void Particle::update(float _timeStep)
     // update force
     m_force = glm::vec3(0, -9.81f, 0.0f) * m_mass;
     // add collision
+    if(m_currentPosition.y <= 0 )
+    {
+        m_currentPosition.y = 0.0f; 
+        m_velocity *= -0.5f;
+    }
     // update velocity 
     m_velocity += m_force / m_mass * _timeStep;
     m_force = glm::vec3(0,0,0);

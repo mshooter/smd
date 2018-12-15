@@ -64,7 +64,7 @@ class DeformableObject
         /// @build shape matching function
         /// @param[_in] _timeStep 
         /// ---------------------------------------------------------
-        void shapematching(float _timeStep);
+        void shapematching(float _timeStep, float _stiffness);
         /// ---------------------------------------------------------
         /// @build calculate center of mass of object
         /// @return the center of mass
