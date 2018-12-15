@@ -63,7 +63,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     // add shape mathcing by translatinjg poositions towards goal positions
     for(auto& particle : m_listOfParticles)
     {
-        particle.shapeMatchUpdate(_timeStep, _stiffness);
+        particle.shapeMatchUpdate(_timeStep, 0.3f);
     }
 }
 /// ---------------------------------------------------------
