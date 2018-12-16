@@ -121,5 +121,3 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
     }
     return MS::kSuccess;
 }
-///-----------------------------------------
-

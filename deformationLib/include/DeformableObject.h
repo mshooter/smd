@@ -74,7 +74,7 @@ class DeformableObject
         /// @build calculate the rotational matrix based on 
         /// linear decomposition 
         /// ---------------------------------------------------------
-        void calculateR();
+        glm::mat3 calculateR();
     private:
         /// ---------------------------------------------------------
         /// @build container that holds the particles

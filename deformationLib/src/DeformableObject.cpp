@@ -46,14 +46,14 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
         m_Apq += particle.getMass() * glm::outerProduct(particle.getQ(), particle.getP());
     }
     // calculate R 
-    calculateR();
+    m_R = calculateR();
     // if rotaton has reflection, reflect back
-//  if(glm::determinant(m_R) < 0)
-//  {
-//      m_R[0][2] = -m_R[0][2];
-//      m_R[1][2] = -m_R[1][2];
-//      m_R[2][2] = -m_R[1][2];
-//  }
+  if(glm::determinant(m_R) < 0)
+  {
+      m_R[0][2] = -m_R[0][2];
+      m_R[1][2] = -m_R[1][2];
+      m_R[2][2] = -m_R[1][2];
+  }
     // compute target positions for rigid transform 
     for(auto& particle : m_listOfParticles)
     {
@@ -79,7 +79,7 @@ glm::vec3 DeformableObject::computeCOM()
     return (com/massSum);
 }
 /// ---------------------------------------------------------
-void DeformableObject::calculateR()
+glm::mat3 DeformableObject::calculateR()
 {
     // might use eigen as a library
     glm::mat3 S = glm::transpose(m_Apq) * m_Apq; 
@@ -97,5 +97,5 @@ void DeformableObject::calculateR()
         }
     }
     // calculated R - do tests
-    m_R = m_Apq * S_inverseGlm;
+    return m_Apq * S_inverseGlm;
 }
