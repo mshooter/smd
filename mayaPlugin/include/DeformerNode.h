@@ -29,6 +29,8 @@ class DeformerNode : public MPxDeformerNode
         static MObject Mass; 
         static MObject CurrentTime;
         static bool isFirstFrame; 
+        static MObject Mode; 
+        static MObject Beta;
         static MTime PreviousTime;
         
         static DeformableObject* ps; 

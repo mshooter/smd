@@ -11,9 +11,10 @@ MObject DeformerNode::Stiffness;
 MObject DeformerNode::GravityMagnitude;
 MObject DeformerNode::GravityDirection;
 MObject DeformerNode::Mass; 
-
+MObject DeformerNode::Beta;
 MObject DeformerNode::CurrentTime; 
 bool DeformerNode::isFirstFrame;
+MObject DeformerNode::Mode;
 MTime DeformerNode::PreviousTime;
 
 DeformableObject* DeformerNode::ps; 
@@ -44,18 +45,26 @@ MStatus DeformerNode::initialize()
     nAttr.setMax(1.0f);
     
     Mass = nAttr.create("Mass", "mas", MFnNumericData::kDouble, 1.0);
-    nAttr.setDefault(1.0);
     nAttr.setChannelBox(true);
     nAttr.setMin(0.0);
     nAttr.setMax(10.0);
+
+    Mode = nAttr.create("Mode", "mod", MFnNumericData::kInt, 0);
+
+    Beta = nAttr.create("Beta", "ba", MFnNumericData::kFloat, 0.2f);
+    nAttr.setMin(0.0f);
+    nAttr.setMax(1.0f);
     // add attributes
     addAttribute(CurrentTime);
     addAttribute(Stiffness);
     addAttribute(Mass);
+    addAttribute(Mode);
+    addAttribute(Beta);
     // affecting - dependencies 
     attributeAffects(CurrentTime, outputGeom);
     attributeAffects(Stiffness, outputGeom);
     attributeAffects(Mass, outputGeom);
+    attributeAffects(Beta, outputGeom);
     return MStatus::kSuccess;
 }
 ///-----------------------------------------
@@ -63,6 +72,8 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
 {
     // if first frame set up the values 
     MTime time_now = block.inputValue(CurrentTime).asTime();
+    int mode = block.inputValue(Mode).asInt();
+    int beta = block.inputValue(Beta).asFloat();
     if(isFirstFrame || time_now.value() == 1)
     {
        if(ps)
@@ -79,7 +90,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             initial_positions_list.emplace_back(pposition);
         }
         // create particle system - deformable object
-        ps = new DeformableObject(initial_positions_list);
+        ps = new DeformableObject(initial_positions_list, mode, beta);
         // set firstFrame to false 
         isFirstFrame = false; 
         return MS::kSuccess;

@@ -14,6 +14,7 @@
 /// \class DeformableObject
 /// \brief class that represent a mesh 
 /// \todo the particle system with the update function 
+enum DeformationMode {Basic=0, Linear=1, Quadratic=2};
 
 class DeformableObject
 {
@@ -26,7 +27,7 @@ class DeformableObject
         /// @build constructor that sets the particle system initial
         /// state
         /// ---------------------------------------------------------
-        DeformableObject(std::vector<glm::vec3> _originalPositions);
+        DeformableObject(std::vector<glm::vec3> _originalPositions, int _mode, float _linearParam);
         /// ---------------------------------------------------------
         /// @build copy constructor 
         /// ---------------------------------------------------------
@@ -92,6 +93,14 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
+        // symmetric mattric 
+        glm::mat3 m_Aqq; 
+        // transformation matrix
+        glm::mat3 m_A;
+        // mode of the deformation (basic. linear, quadratic)
+        int m_mode; 
+        // beta in the paper
+        float m_linearParam;
 };
 
 #endif // _DEFORMALEOBJECT_H_
