@@ -37,7 +37,7 @@ MStatus DeformerNode::initialize()
     uAttr.setDefault(MAnimControl::currentTime().as(MTime::kFilm));
     uAttr.setChannelBox(true);
 
-    Stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kDouble, 1.0);
+    Stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kFloat, 1.0);
     nAttr.setStorable(true);
     nAttr.setChannelBox(true);
     nAttr.setMin(0.0f);
@@ -92,7 +92,6 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         PreviousTime = time_now;
         // for particle in deformable object
         // set attributes
-        // update positions
         float stiffness =block.inputValue(Stiffness).asFloat(); 
        if(ps)
        {

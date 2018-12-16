@@ -107,7 +107,7 @@ void Particle::update(float _timeStep)
     if(m_currentPosition.y <= 0 )
     {
         m_currentPosition.y = 0.0f; 
-        m_velocity *= -0.5f;
+        m_velocity *= -0.1f;
     }
     // update velocity 
     m_velocity += m_force / m_mass * _timeStep;
