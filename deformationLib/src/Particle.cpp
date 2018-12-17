@@ -121,3 +121,13 @@ void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
     m_velocity += _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }
+//---------------------------------------------------------------------
+Eigen::Matrix<float, 9,1> Particle::getQTilde()
+{
+    return m_qTilde;
+}
+//---------------------------------------------------------------------
+void Particle::setQTilde(Eigen::Matrix<float, 9, 1> _qTilde)
+{
+    m_qTilde = std::move(_qTilde);
+}

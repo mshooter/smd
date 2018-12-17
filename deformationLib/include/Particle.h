@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include <iostream>
 #include <vector>
+#include <Eigen/Dense>
 /// \author Moira Shooter
 /// \version 1.0
 /// \date 17 November 2018
@@ -76,6 +77,8 @@ class Particle
         /// @build get the current relative pos  of the particle 
         /// ---------------------------------------------------------
         glm::vec3 getP();
+        Eigen::Matrix<float, 9,1> getQTilde();
+        void setQTilde(Eigen::Matrix<float, 9, 1> _qTilde);
         /// ---------------------------------------------------------
         /// @build get external force  
         /// ---------------------------------------------------------
@@ -161,7 +164,7 @@ class Particle
         /// ---------------------------------------------------------
         /// @build  inital relative coordinate,  tildeq
         /// ---------------------------------------------------------
-        std::vector<float, 9> m_qTilde; 
+        Eigen::Matrix<float,9,1> m_qTilde; 
         /// ---------------------------------------------------------
         /// @build  current relative coordinate, p 
         /// ---------------------------------------------------------

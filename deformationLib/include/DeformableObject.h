@@ -88,15 +88,19 @@ class DeformableObject
         // ---------------------------------------------------------
         /// @build A_pq (rotational matrix)
         /// ---------------------------------------------------------
-        glm::mat3 m_Apq; 
+        glm::mat3 m_Apq;
+        Eigen::Matrix<float,3,9> m_ApqTilde; 
         /// ---------------------------------------------------------
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
+        Eigen::Matrix<float, 9,3> m_RTilde;
         // symmetric mattric 
         glm::mat3 m_Aqq; 
+        Eigen::Matrix<float, 9,9> m_AqqTilde;
         // transformation matrix
         glm::mat3 m_A;
+        Eigen::Matrix<float,3,9> m_ATilde;
         // mode of the deformation (basic. linear, quadratic)
         int m_mode; 
         // beta in the paper
