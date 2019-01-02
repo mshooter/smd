@@ -70,10 +70,10 @@ MStatus DeformerNode::initialize()
 ///-----------------------------------------
 MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix& localToWorldMatrix, unsigned int multiIndex)
 {
+    MGlobal::displayInfo("INITIATE");
     // if first frame set up the values 
     MTime time_now = block.inputValue(CurrentTime).asTime();
     int mode = block.inputValue(Mode).asInt();
-    int beta = block.inputValue(Beta).asFloat();
     if(isFirstFrame || time_now.value() == 1)
     {
        if(ps)
@@ -90,35 +90,37 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             initial_positions_list.emplace_back(pposition);
         }
         // create particle system - deformable object
-        ps = new DeformableObject(initial_positions_list, mode, beta);
+        ps = new DeformableObject(initial_positions_list, mode);
         // set firstFrame to false 
         isFirstFrame = false; 
         return MS::kSuccess;
     }
     else
     {
+
         // fetch attriute values 
         time_now = block.inputValue(CurrentTime).asTime(); 
         MTime delta_time = time_now - PreviousTime; 
         PreviousTime = time_now;
+        mode = block.inputValue(Mode).asInt();
         // for particle in deformable object
         // set attributes
         float stiffness =block.inputValue(Stiffness).asFloat(); 
-       if(ps)
-       {
-          float deltaTimeValue = delta_time.value();
-          int updatesPerTimeStep = 2; 
-          for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
-          {
-              // update and shape match  
-              ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
-              ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), stiffness);
-          }
-       }
-       else
-       {
-           MGlobal::displayInfo("ps==NULL");
-       }
+        if(ps)
+        {
+            float deltaTimeValue = delta_time.value();
+            int updatesPerTimeStep = 2; 
+            for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
+            {
+                // update and shape match  
+                ps->update(1/24.0/updatesPerTimeStep);
+                ps->shapematching(1/24.0/updatesPerTimeStep, stiffness);
+            }
+        }
+        else
+        {
+            MGlobal::displayInfo("ps==NULL");
+        }
 
         // update output positions 
         MMatrix localToWoldMatrixInv = localToWorldMatrix.inverse();

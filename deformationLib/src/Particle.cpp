@@ -6,8 +6,8 @@ Particle::Particle(glm::vec3 _originalPositions)
     m_initPosition = _originalPositions;
     m_currentPosition = _originalPositions; 
     m_goalPosition = _originalPositions; 
-    m_velocity = glm::vec3{0.0f};
-    m_force = glm::vec3{0.0f};
+    m_velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    m_force = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 //----------------------------------------------------------------------
 float Particle::getMass()
@@ -97,12 +97,13 @@ void Particle::reset()
     m_currentPosition = glm::vec3{0.0f};
     m_goalPosition = glm::vec3{0.0f};
     m_velocity = glm::vec3{0.0f};
+    m_force = glm::vec3{0.0f};
 }
 //---------------------------------------------------------------------
 void Particle::update(float _timeStep)
 {
     // update force
-    m_force = glm::vec3(-5.0f, -9.81f, 0.0f) * m_mass;
+    m_force = glm::vec3(0.0f, -9.81f, 0.0f) * m_mass;
     // add collision
     if(m_currentPosition.y <= 0 )
     {
@@ -120,14 +121,4 @@ void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
 {
     m_velocity += _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
-}
-//---------------------------------------------------------------------
-Eigen::Matrix<float, 9,1> Particle::getQTilde()
-{
-    return m_qTilde;
-}
-//---------------------------------------------------------------------
-void Particle::setQTilde(Eigen::Matrix<float, 9, 1> _qTilde)
-{
-    m_qTilde = std::move(_qTilde);
 }

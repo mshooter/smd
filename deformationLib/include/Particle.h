@@ -77,8 +77,6 @@ class Particle
         /// @build get the current relative pos  of the particle 
         /// ---------------------------------------------------------
         glm::vec3 getP();
-        Eigen::Matrix<float, 9,1> getQTilde();
-        void setQTilde(Eigen::Matrix<float, 9, 1> _qTilde);
         /// ---------------------------------------------------------
         /// @build get external force  
         /// ---------------------------------------------------------
@@ -161,10 +159,6 @@ class Particle
         /// @build  inital relative coordinate, q
         /// ---------------------------------------------------------
         glm::vec3 m_q; 
-        /// ---------------------------------------------------------
-        /// @build  inital relative coordinate,  tildeq
-        /// ---------------------------------------------------------
-        Eigen::Matrix<float,9,1> m_qTilde; 
         /// ---------------------------------------------------------
         /// @build  current relative coordinate, p 
         /// ---------------------------------------------------------
