@@ -90,17 +90,7 @@ void Particle::setForce(glm::vec3 _force)
     m_force = std::move(_force);
 }
 //---------------------------------------------------------------------
-void Particle::reset()
-{
-    m_initPosition = glm::vec3{0.0f};
-    m_mass = 1.0f; 
-    m_currentPosition = glm::vec3{0.0f};
-    m_goalPosition = glm::vec3{0.0f};
-    m_velocity = glm::vec3{0.0f};
-    m_force = glm::vec3{0.0f};
-}
-//---------------------------------------------------------------------
-void Particle::update(float _timeStep)
+void Particle::updateForces(float _timeStep)
 {
     // update force
     m_force = glm::vec3(0.0f, -9.81f, 0.0f) * m_mass;
@@ -108,17 +98,32 @@ void Particle::update(float _timeStep)
     if(m_currentPosition.y <= 0 )
     {
         m_velocity *= - 0.5f;
-        m_currentPosition.y = 0.01f; 
+        m_currentPosition.y = 0.1f; 
     }
+
+}
+//---------------------------------------------------------------------
+void Particle::updateVelocity(float _timeStep)
+{
     // update velocity 
     m_velocity += m_force / m_mass * _timeStep;
     m_force = glm::vec3(0,0,0);
+}
+//---------------------------------------------------------------------
+void Particle::updatePosition(float _timeStep)
+{
     // update position 
     m_currentPosition += _timeStep * m_velocity;
+    // update position 
+    if(m_currentPosition.y <= 0)
+    {
+        m_currentPosition.y = 0.1f;
+    }
 }
 //---------------------------------------------------------------------
 void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
 {
+    // set velocity elasticity
     m_velocity += _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }

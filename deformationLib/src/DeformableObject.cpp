@@ -2,9 +2,9 @@
 #include <cmath>
 #include <math.h>
 /// ---------------------------------------------------------
-DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, int _mode)
+DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions)
 {
-    m_mode = _mode;
+    m_mode = 0;
     // reset all attributes
     for(unsigned int i = 0 ; i < _originalPositions.size(); ++i)
     {
@@ -39,7 +39,9 @@ void DeformableObject::update(float _timeStep)
 {
     for(auto& part : m_listOfParticles)
     {
-        part.update(_timeStep);
+        part.updateForces(_timeStep);
+        part.updateVelocity(_timeStep);
+        part.updatePosition(_timeStep);
     }
 }
 /// ---------------------------------------------------------
@@ -47,9 +49,10 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
 {
     glm::vec3 centerOfMass; 
     centerOfMass = computeCOM();
+    // calculate P
     for(auto& particle : m_listOfParticles)
     {
-        particle.setP(particle.getInitPosition() - m_originalCenterOfMass);
+        particle.setP(particle.getInitPosition() - centerOfMass);
         
     }
     // calculate matrices
@@ -72,6 +75,11 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     {
         particle.shapeMatchUpdate(_timeStep, _stiffness);
     }
+}
+/// ---------------------------------------------------------
+void DeformableObject::setMode(int _mode)
+{
+    m_mode = std::move(_mode);
 }
 /// ---------------------------------------------------------
 glm::vec3 DeformableObject::computeCOM()

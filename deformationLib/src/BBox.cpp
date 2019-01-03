@@ -1,6 +1,6 @@
 #include "BBox.h"
 
-BBox::BBox(glm::vec3 _Positions)
+BBox::BBox(std::vector<glm::vec3> _Positions)
 {
     for(auto& vert : _Positions)
     {
@@ -13,25 +13,25 @@ BBox::BBox(glm::vec3 _Positions)
     }
 
     m_size = m_max-m_min;
-    m_center = (m_min+m_max) / 2
+    m_center = (m_min+m_max) / 2.0f;
 }
 //-----------------------------------------------------
-BBox::getMin()
+glm::vec3 BBox::getMin()
 {
     return m_min;
 }
 //-----------------------------------------------------
-BBox::getMax()
+glm::vec3 BBox::getMax()
 {
     return m_max;
 }
 //-----------------------------------------------------
-BBox::getCenter()
+glm::vec3 BBox::getCenter()
 {
     return m_center;
 }
 //-----------------------------------------------------
-BBox::getSize()
+glm::vec3 BBox::getSize()
 {
     return m_size;
 }

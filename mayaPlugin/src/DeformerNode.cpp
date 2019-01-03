@@ -2,6 +2,7 @@
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MFnTypedAttribute.h>
+#include <maya/MFnEnumAttribute.h>
 #include <maya/MAnimControl.h>
 #include <maya/MGlobal.h>
 #define SIGN(a) (a < 0 ? -1 : 1)
@@ -33,13 +34,13 @@ MStatus DeformerNode::initialize()
     MFnTypedAttribute tAttr;
     MFnNumericAttribute nAttr;
     MFnUnitAttribute uAttr; 
+    MFnEnumAttribute eAttr;
     // numeric attribues
     CurrentTime = uAttr.create("CurrentTime", "ct", MFnUnitAttribute::kTime, 0.0);
     uAttr.setDefault(MAnimControl::currentTime().as(MTime::kFilm));
     uAttr.setChannelBox(true);
 
     Stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kFloat, 1.0);
-    nAttr.setStorable(true);
     nAttr.setChannelBox(true);
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
@@ -49,7 +50,12 @@ MStatus DeformerNode::initialize()
     nAttr.setMin(0.0);
     nAttr.setMax(10.0);
 
-    Mode = nAttr.create("Mode", "mod", MFnNumericData::kInt, 0);
+    Mode = eAttr.create("Mode", "mod", 0);
+    eAttr.setStorable(true);
+    eAttr.setKeyable(true);
+    eAttr.addField("Rigid", 0);
+    eAttr.addField("Linear", 1);
+    eAttr.addField("Quadratic", 2);
 
     Beta = nAttr.create("Beta", "ba", MFnNumericData::kFloat, 0.2f);
     nAttr.setMin(0.0f);
@@ -61,19 +67,19 @@ MStatus DeformerNode::initialize()
     addAttribute(Mode);
     addAttribute(Beta);
     // affecting - dependencies 
+    // input - output 
     attributeAffects(CurrentTime, outputGeom);
     attributeAffects(Stiffness, outputGeom);
     attributeAffects(Mass, outputGeom);
+    attributeAffects(Mode, outputGeom);
     attributeAffects(Beta, outputGeom);
     return MStatus::kSuccess;
 }
 ///-----------------------------------------
 MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix& localToWorldMatrix, unsigned int multiIndex)
 {
-    MGlobal::displayInfo("INITIATE");
     // if first frame set up the values 
     MTime time_now = block.inputValue(CurrentTime).asTime();
-    int mode = block.inputValue(Mode).asInt();
     if(isFirstFrame || time_now.value() == 1)
     {
        if(ps)
@@ -90,7 +96,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             initial_positions_list.emplace_back(pposition);
         }
         // create particle system - deformable object
-        ps = new DeformableObject(initial_positions_list, mode);
+        ps = new DeformableObject(initial_positions_list);
         // set firstFrame to false 
         isFirstFrame = false; 
         return MS::kSuccess;
@@ -102,7 +108,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         time_now = block.inputValue(CurrentTime).asTime(); 
         MTime delta_time = time_now - PreviousTime; 
         PreviousTime = time_now;
-        mode = block.inputValue(Mode).asInt();
+        ps->setMode(block.inputValue(Mode).asInt());
         // for particle in deformable object
         // set attributes
         float stiffness =block.inputValue(Stiffness).asFloat(); 
@@ -113,15 +119,15 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
             {
                 // update and shape match  
-                ps->update(1/24.0/updatesPerTimeStep);
-                ps->shapematching(1/24.0/updatesPerTimeStep, stiffness);
+                ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
+                ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), stiffness);
             }
         }
         else
         {
             MGlobal::displayInfo("ps==NULL");
         }
-
+        std::cout<<block.inputValue(Mode).asInt()<<std::endl;
         // update output positions 
         MMatrix localToWoldMatrixInv = localToWorldMatrix.inverse();
         for(; !iter.isDone(); iter.next())

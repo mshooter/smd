@@ -119,15 +119,13 @@ class Particle
         /// ---------------------------------------------------------
         void setForce(glm::vec3 _force);
         /// ---------------------------------------------------------
-        /// @build reset method : sets the particle to default value 
-        /// ---------------------------------------------------------
-        void reset();
-        /// ---------------------------------------------------------
         /// @build update method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
         /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
-        void update(float _timeStep);       
+        void updateForces(float _timeStep);       
+        void updateVelocity(float _timeStep);       
+        void updatePosition(float _timeStep);       
         /// ---------------------------------------------------------
         /// @build update method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'

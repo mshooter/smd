@@ -3,7 +3,7 @@
 #define _BBOX_H_
 
 #include "glm/glm.hpp"
-
+#include <vector>
 class BBox
 {
     public:
@@ -15,7 +15,7 @@ class BBox
         /// @build constructor
         /// @param[_in] _Positions : positions of my mesh
         /// ---------------------------------------------------------
-        BBox(glm::vec3 _Positions);
+        BBox(std::vector<glm::vec3> _Positions);
         /// ---------------------------------------------------------
         /// @default copy constructor 
         /// ---------------------------------------------------------
