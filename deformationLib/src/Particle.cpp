@@ -2,7 +2,6 @@
 
 Particle::Particle(glm::vec3 _originalPositions)
 {   
-    m_mass = 1.0f;
     m_initPosition = _originalPositions;
     m_currentPosition = _originalPositions; 
     m_goalPosition = _originalPositions; 
@@ -90,15 +89,28 @@ void Particle::setForce(glm::vec3 _force)
     m_force = std::move(_force);
 }
 //---------------------------------------------------------------------
+void Particle::setGravity(glm::vec3 _gravity)
+{
+    m_gravity = std::move(_gravity);
+}
+//---------------------------------------------------------------------
 void Particle::updateForces(float _timeStep)
 {
-    // update force
-    m_force = glm::vec3(0.0f, -9.81f, 0.0f) * m_mass;
+    // update force total force
+    // gravity 
+    m_force = m_gravity*m_mass;
     // add collision
     if(m_currentPosition.y <= 0 )
     {
-        m_velocity *= - 0.5f;
-        m_currentPosition.y = 0.1f; 
+//        m_velocity *= - 0.5f;
+        glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 deltaV = m_velocity - glm::vec3(0.0f, 0.0f, 0.0f); 
+        glm::vec3 composant = normal * glm::dot(normal, deltaV); 
+        glm::vec3 collisionImp = -(0.5f+1.0f) * normal * glm::dot(normal, deltaV) * m_mass;
+        glm::vec3 frictionImp = -0.5f * (deltaV - composant) * m_mass;
+        m_force += (collisionImp + frictionImp) / _timeStep;
+        // add other forces together
+        m_currentPosition.y = 0.01f; 
     }
 
 }
@@ -117,13 +129,13 @@ void Particle::updatePosition(float _timeStep)
     // update position 
     if(m_currentPosition.y <= 0)
     {
-        m_currentPosition.y = 0.1f;
+        m_currentPosition.y = 0.01f;
     }
 }
 //---------------------------------------------------------------------
 void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
 {
     // set velocity elasticity
-    m_velocity += _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
+    m_velocity +=  0.5f *_stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }

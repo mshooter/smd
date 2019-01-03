@@ -9,8 +9,9 @@
 
 MTypeId DeformerNode::id(0x0100F);
 MObject DeformerNode::Stiffness;
-MObject DeformerNode::GravityMagnitude;
-MObject DeformerNode::GravityDirection;
+MObject DeformerNode::GravityX;
+MObject DeformerNode::GravityY;
+MObject DeformerNode::GravityZ;
 MObject DeformerNode::Mass; 
 MObject DeformerNode::Beta;
 MObject DeformerNode::CurrentTime; 
@@ -45,7 +46,7 @@ MStatus DeformerNode::initialize()
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
     
-    Mass = nAttr.create("Mass", "mas", MFnNumericData::kDouble, 1.0);
+    Mass = nAttr.create("Mass", "mas", MFnNumericData::kFloat, 1.0);
     nAttr.setChannelBox(true);
     nAttr.setMin(0.0);
     nAttr.setMax(10.0);
@@ -57,6 +58,18 @@ MStatus DeformerNode::initialize()
     eAttr.addField("Linear", 1);
     eAttr.addField("Quadratic", 2);
 
+    GravityX = nAttr.create("GravityX", "gx", MFnNumericData::kFloat, 0.0f);
+    nAttr.setMin(-10.0f);
+    nAttr.setMax(10.0f);
+
+    GravityY = nAttr.create("GravityY", "gy", MFnNumericData::kFloat, -9.8f);
+    nAttr.setMin(-10.0f);
+    nAttr.setMax(10.0f);
+    
+    GravityZ = nAttr.create("GravityZ", "gz", MFnNumericData::kFloat, 0.0f);
+    nAttr.setMin(-10.0f);
+    nAttr.setMax(10.0f);
+
     Beta = nAttr.create("Beta", "ba", MFnNumericData::kFloat, 0.2f);
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
@@ -65,6 +78,9 @@ MStatus DeformerNode::initialize()
     addAttribute(Stiffness);
     addAttribute(Mass);
     addAttribute(Mode);
+    addAttribute(GravityX);
+    addAttribute(GravityY);
+    addAttribute(GravityZ);
     addAttribute(Beta);
     // affecting - dependencies 
     // input - output 
@@ -72,6 +88,9 @@ MStatus DeformerNode::initialize()
     attributeAffects(Stiffness, outputGeom);
     attributeAffects(Mass, outputGeom);
     attributeAffects(Mode, outputGeom);
+    attributeAffects(GravityX, outputGeom);
+    attributeAffects(GravityY, outputGeom);
+    attributeAffects(GravityZ, outputGeom);
     attributeAffects(Beta, outputGeom);
     return MStatus::kSuccess;
 }
@@ -108,10 +127,12 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         time_now = block.inputValue(CurrentTime).asTime(); 
         MTime delta_time = time_now - PreviousTime; 
         PreviousTime = time_now;
-        ps->setMode(block.inputValue(Mode).asInt());
         // for particle in deformable object
         // set attributes
+        ps->setMode(block.inputValue(Mode).asInt());
+        ps->setParameters(block.inputValue(Mass).asFloat(), glm::vec3(block.inputValue(GravityX).asFloat(), block.inputValue(GravityY).asFloat(), block.inputValue(GravityZ).asFloat()));
         float stiffness =block.inputValue(Stiffness).asFloat(); 
+        ps->setBeta(block.inputValue(Beta).asFloat());
         if(ps)
         {
             float deltaTimeValue = delta_time.value();
@@ -127,7 +148,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         {
             MGlobal::displayInfo("ps==NULL");
         }
-        std::cout<<block.inputValue(Mode).asInt()<<std::endl;
+
         // update output positions 
         MMatrix localToWoldMatrixInv = localToWorldMatrix.inverse();
         for(; !iter.isDone(); iter.next())

@@ -71,6 +71,10 @@ class DeformableObject
         /// ---------------------------------------------------------
         void setMode(int _mode);
         /// ---------------------------------------------------------
+        /// @build set beta 
+        /// ---------------------------------------------------------
+        void setBeta(float _beta);
+        /// ---------------------------------------------------------
         /// @build calculate center of mass of object
         /// @return the center of mass
         /// ---------------------------------------------------------
@@ -80,7 +84,7 @@ class DeformableObject
         /// linear decomposition 
         /// ---------------------------------------------------------
         glm::mat3 calculateR();
-        
+        void setParameters(float _mass, glm::vec3 _gravity);
     private:
         /// ---------------------------------------------------------
         /// @build container that holds the particles
@@ -104,6 +108,8 @@ class DeformableObject
         glm::mat3 m_A;
         // mode of the deformation (basic. linear, quadratic)
         int m_mode; 
+        // mode of the deformation (basic. linear, quadratic)
+        float m_beta; 
 };
 
 #endif // _DEFORMALEOBJECT_H_

@@ -67,8 +67,25 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     {
         // don't forget te rotational matrix
         // basic mode
-        if(m_mode == DeformationMode::Basic)
-            particle.setGoalPosition(m_R * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
+        switch(m_mode)
+        {
+            case DeformationMode::Basic:
+                // set goal positions
+                particle.setGoalPosition(m_R * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
+                break;
+            case DeformationMode::Linear:
+                // calculate linear matrix 
+                m_A = m_Aqq * m_Apq;   
+                // scale A to ensure det(A) = 1
+                m_A /= pow(glm::determinant(m_A) > 0.1f ? glm::determinant(m_A) : 0.1f, 1/3.0f);
+                // set goal positions
+                particle.setGoalPosition((m_beta * m_A + (1.0f-m_beta) * m_R) * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
+                break;
+            case DeformationMode::Quadratic:
+                break;
+            default: 
+                std::cout<<"Error, there is no mode"<<std::endl;
+        }
     }
     // add shape mathcing by translatinjg poositions towards goal positions
     for(auto& particle : m_listOfParticles)
@@ -80,6 +97,11 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
 void DeformableObject::setMode(int _mode)
 {
     m_mode = std::move(_mode);
+}
+/// ---------------------------------------------------------
+void DeformableObject::setBeta(float _beta)
+{
+    m_beta = std::move(_beta);
 }
 /// ---------------------------------------------------------
 glm::vec3 DeformableObject::computeCOM()
@@ -113,4 +135,13 @@ glm::mat3 DeformableObject::calculateR()
     }
     // calculated R - do tests
     return m_Apq * S_inverseGlm;
+}
+/// ---------------------------------------------------------
+void DeformableObject::setParameters(float _mass, glm::vec3 _gravity)
+{
+    for(auto& part : m_listOfParticles)
+    {
+        part.setMass(_mass);
+        part.setGravity(_gravity);
+    }
 }

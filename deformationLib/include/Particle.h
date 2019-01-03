@@ -118,6 +118,7 @@ class Particle
         /// @build set force  
         /// ---------------------------------------------------------
         void setForce(glm::vec3 _force);
+        void setGravity(glm::vec3 _gravity);
         /// ---------------------------------------------------------
         /// @build update method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
@@ -137,6 +138,10 @@ class Particle
         /// @build initial position of the particle
         /// ---------------------------------------------------------
         glm::vec3 m_initPosition; 
+        /// ---------------------------------------------------------
+        /// @build the value of gravity 
+        /// ---------------------------------------------------------
+        glm::vec3 m_gravity; 
         /// ---------------------------------------------------------
         /// @build the mass of the particle 
         /// ---------------------------------------------------------
