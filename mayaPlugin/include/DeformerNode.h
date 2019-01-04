@@ -24,9 +24,9 @@ class DeformerNode : public MPxDeformerNode
 
         // Attributes
         static MObject Stiffness; 
-        static MObject GravityX; 
-        static MObject GravityY; 
-        static MObject GravityZ; 
+        static MObject VelocityX; 
+        static MObject VelocityY; 
+        static MObject VelocityZ; 
         static MObject Mass; 
         static MObject CurrentTime;
         static bool isFirstFrame; 

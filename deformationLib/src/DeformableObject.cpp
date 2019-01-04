@@ -2,13 +2,14 @@
 #include <cmath>
 #include <math.h>
 /// ---------------------------------------------------------
-DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions)
+DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, glm::vec3 _vel)
 {
     m_mode = 0;
+    m_Aqq = glm::mat3(0.0f);
     // reset all attributes
     for(unsigned int i = 0 ; i < _originalPositions.size(); ++i)
     {
-        m_listOfParticles.emplace_back(Particle(_originalPositions[i]));
+        m_listOfParticles.emplace_back(Particle(_originalPositions[i], _vel));
     }
     // original center of mass
     m_originalCenterOfMass = computeCOM();
@@ -47,12 +48,13 @@ void DeformableObject::update(float _timeStep)
 /// ---------------------------------------------------------
 void DeformableObject::shapematching(float _timeStep, float _stiffness)
 {
+    m_Apq = glm::mat3(0.0f);
     glm::vec3 centerOfMass; 
     centerOfMass = computeCOM();
-    // calculate P
+    // calculate P current original positions 
     for(auto& particle : m_listOfParticles)
     {
-        particle.setP(particle.getInitPosition() - centerOfMass);
+        particle.setP(particle.getCurrentPosition() - centerOfMass);
         
     }
     // calculate matrices
@@ -62,6 +64,12 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     }
     // calculate R 
     m_R = calculateR();
+//   if(glm::determinant(m_R)<0)
+//   {
+//       m_R[0][2] = -m_R[0][2];
+//       m_R[1][2] = -m_R[1][2];
+//       m_R[2][2] = -m_R[2][2];
+//   }
     // compute target positions for rigid transform 
     for(auto& particle : m_listOfParticles)
     {
@@ -75,7 +83,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
                 break;
             case DeformationMode::Linear:
                 // calculate linear matrix 
-                m_A = m_Aqq * m_Apq;   
+                m_A = m_Apq * m_Aqq;   
                 // scale A to ensure det(A) = 1
                 m_A /= pow(glm::determinant(m_A) > 0.1f ? glm::determinant(m_A) : 0.1f, 1/3.0f);
                 // set goal positions
@@ -94,6 +102,11 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     }
 }
 /// ---------------------------------------------------------
+int DeformableObject::getMode()
+{
+    return m_mode;
+}
+/// ---------------------------------------------------------
 void DeformableObject::setMode(int _mode)
 {
     m_mode = std::move(_mode);
@@ -106,7 +119,7 @@ void DeformableObject::setBeta(float _beta)
 /// ---------------------------------------------------------
 glm::vec3 DeformableObject::computeCOM()
 {
-    glm::vec3 com{0.0f};
+    glm::vec3 com(0.0f, 0.0f, 0.0f);
     float massSum = 0.0f;
     for(auto& particle : m_listOfParticles)
     {
@@ -125,7 +138,7 @@ glm::mat3 DeformableObject::calculateR()
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seigsq(Seig);
     Eigen::Matrix<float, 3,3, Eigen::RowMajor> S_inverse = Seigsq.operatorInverseSqrt();
     // convert the S_inverse to glm 
-    glm::mat3 S_inverseGlm;
+    glm::mat3 S_inverseGlm(0.0f);
     for(int i=0; i < 3; ++i)
     {
         for(int j=0; j < 3; ++j)
@@ -134,7 +147,7 @@ glm::mat3 DeformableObject::calculateR()
         }
     }
     // calculated R - do tests
-    return m_Apq * S_inverseGlm;
+    return  m_Apq * S_inverseGlm;
 }
 /// ---------------------------------------------------------
 void DeformableObject::setParameters(float _mass, glm::vec3 _gravity)
@@ -142,6 +155,10 @@ void DeformableObject::setParameters(float _mass, glm::vec3 _gravity)
     for(auto& part : m_listOfParticles)
     {
         part.setMass(_mass);
-        part.setGravity(_gravity);
     }
+}
+/// ---------------------------------------------------------
+glm::mat3 DeformableObject::getAqq()
+{
+    return m_Aqq;
 }

@@ -27,7 +27,7 @@ class DeformableObject
         /// @build constructor that sets the particle system initial
         /// state
         /// ---------------------------------------------------------
-        DeformableObject(std::vector<glm::vec3> _originalPositions);
+        DeformableObject(std::vector<glm::vec3> _originalPositions, glm::vec3 _vel);
         /// ---------------------------------------------------------
         /// @build copy constructor 
         /// ---------------------------------------------------------
@@ -67,6 +67,10 @@ class DeformableObject
         /// ---------------------------------------------------------
         void shapematching(float _timeStep, float _stiffness);
         /// ---------------------------------------------------------
+        /// @build get Mode
+        /// ---------------------------------------------------------
+        int getMode();
+        /// ---------------------------------------------------------
         /// @build set Mode
         /// ---------------------------------------------------------
         void setMode(int _mode);
@@ -85,6 +89,7 @@ class DeformableObject
         /// ---------------------------------------------------------
         glm::mat3 calculateR();
         void setParameters(float _mass, glm::vec3 _gravity);
+        glm::mat3 getAqq();
     private:
         /// ---------------------------------------------------------
         /// @build container that holds the particles

@@ -28,7 +28,7 @@ class Particle
         /// @build constructor
         /// @param[_in] _initPos : initial position of the particle
         /// ---------------------------------------------------------
-        Particle(glm::vec3 _originalPositions);
+        Particle(glm::vec3 _originalPositions, glm::vec3 _vel);
         /// ---------------------------------------------------------
         /// @default copy constructor 
         /// ---------------------------------------------------------
@@ -118,14 +118,24 @@ class Particle
         /// @build set force  
         /// ---------------------------------------------------------
         void setForce(glm::vec3 _force);
+        /// ---------------------------------------------------------
+        /// @build set gravity  
+        /// ---------------------------------------------------------
         void setGravity(glm::vec3 _gravity);
         /// ---------------------------------------------------------
-        /// @build update method for individial method
+        /// @build update force method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
-        /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
         void updateForces(float _timeStep);       
+        /// ---------------------------------------------------------
+        /// @build update velocity method for individial method
+        /// @param[_in] _timeStep : the time for a 'frame'
+        /// ---------------------------------------------------------
         void updateVelocity(float _timeStep);       
+        /// ---------------------------------------------------------
+        /// @build update position method for individial method
+        /// @param[_in] _timeStep : the time for a 'frame'
+        /// ---------------------------------------------------------
         void updatePosition(float _timeStep);       
         /// ---------------------------------------------------------
         /// @build update method for individial method
