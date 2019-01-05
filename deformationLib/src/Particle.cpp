@@ -101,7 +101,7 @@ void Particle::updateForces(float _timeStep)
     // gravity 
     m_force = glm::vec3(0.0f, -9.8f, 0.0f) * m_mass;
     // add collision
-    if(m_currentPosition.y <= 0 )
+    if(m_currentPosition.y <= 0)
     {
 //        m_velocity *= - 0.5f;
         glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);

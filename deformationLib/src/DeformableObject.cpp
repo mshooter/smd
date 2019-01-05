@@ -67,12 +67,12 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     }
     // calculate R 
     m_R = calculateR();
-//   if(glm::determinant(m_R)<0)
-//   {
-//       m_R[2][0] = -m_R[2][0];
-//       m_R[2][1] = -m_R[2][1];
-//       m_R[2][2] = -m_R[2][2];
-//   }
+//  if(glm::determinant(m_R)<0)
+//  {
+//      m_R[2][0] = -m_R[2][0];
+//      m_R[2][1] = -m_R[2][1];
+//      m_R[2][2] = -m_R[2][2];
+//  }
     // basic mode
     switch(m_mode)
     {
@@ -136,7 +136,7 @@ glm::vec3 DeformableObject::computeCOM()
 glm::mat3 DeformableObject::calculateR()
 {
     // might use eigen as a library
-    glm::mat3 S = glm::transpose(m_Apq) * m_Apq; 
+    glm::mat3 S = m_Apq * glm::transpose(m_Apq); 
     // convert to an eigen matrix
     Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seig(&S[0][0]);
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seigsq(Seig);
