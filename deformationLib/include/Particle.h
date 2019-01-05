@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <Eigen/Dense>
+#include <armadillo>
 /// \author Moira Shooter
 /// \version 1.0
 /// \date 17 November 2018
@@ -143,6 +144,8 @@ class Particle
         /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
         void shapeMatchUpdate(float _timeStep, float _stiffness);
+        void setQtilde(arma::mat _qtilde);
+        arma::mat getQtilde();
     private:
         /// ---------------------------------------------------------
         /// @build initial position of the particle
@@ -172,6 +175,10 @@ class Particle
         /// @build  inital relative coordinate, q
         /// ---------------------------------------------------------
         glm::vec3 m_q; 
+        /// ---------------------------------------------------------
+        /// @build  inital relative coordinate, q_tilde 9x1 
+        /// ---------------------------------------------------------
+        arma::mat m_qtilde = arma::mat(9,1);        
         /// ---------------------------------------------------------
         /// @build  current relative coordinate, p 
         /// ---------------------------------------------------------

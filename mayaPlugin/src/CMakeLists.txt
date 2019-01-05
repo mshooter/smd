@@ -8,6 +8,10 @@ set(EIGEN3_ROOT /usr/local/include/eigen3)
 find_package(Eigen REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
+# armadillo 
+find_package(Armadillo REQUIRED)
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+
 # maya
 find_package(Maya REQUIRED)
 include_directories(${MAYA_INCLUDE_DIR})
@@ -21,5 +25,5 @@ include_directories(../include)
 
 # third party - deformationLib
 include_directories(/Users/moirashooter/smd/deformationLib/include)
-target_link_libraries(${PROJECT_NAME} ${MAYA_LIBRARIES} /Users/moirashooter/smd/deformationLib/lib/libdeformationLib.a ) 
+target_link_libraries(${PROJECT_NAME} ${MAYA_LIBRARIES} /Users/moirashooter/smd/deformationLib/lib/libdeformationLib.a ${ARMADILLO_LIBRARIES} ) 
 

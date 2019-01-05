@@ -88,7 +88,7 @@ class DeformableObject
         /// linear decomposition 
         /// ---------------------------------------------------------
         glm::mat3 calculateR();
-        void setParameters(float _mass, glm::vec3 _gravity);
+        void setParameters(float _mass);
         glm::mat3 getAqq();
     private:
         /// ---------------------------------------------------------
@@ -107,7 +107,7 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
-        // symmetric mattric 
+        // symmetric matrix 
         glm::mat3 m_Aqq; 
         // transformation matrix
         glm::mat3 m_A;

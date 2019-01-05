@@ -1,7 +1,7 @@
 #include "DeformableObject.h"
 #include <cmath>
 #include <math.h>
-/// ---------------------------------------------------------
+
 DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, glm::vec3 _vel)
 {
     m_mode = 0;
@@ -23,7 +23,10 @@ DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, gl
     {
         m_Aqq += particle.getMass() * glm::outerProduct(particle.getQ(), particle.getQ());
     }
-    
+    // inverse of m_Aqq
+    m_Aqq = glm::inverse(m_Aqq);
+
+
 }
 // ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
@@ -66,34 +69,35 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     m_R = calculateR();
 //   if(glm::determinant(m_R)<0)
 //   {
-//       m_R[0][2] = -m_R[0][2];
-//       m_R[1][2] = -m_R[1][2];
+//       m_R[2][0] = -m_R[2][0];
+//       m_R[2][1] = -m_R[2][1];
 //       m_R[2][2] = -m_R[2][2];
 //   }
-    // compute target positions for rigid transform 
-    for(auto& particle : m_listOfParticles)
+    // basic mode
+    switch(m_mode)
     {
-        // don't forget te rotational matrix
-        // basic mode
-        switch(m_mode)
-        {
-            case DeformationMode::Basic:
-                // set goal positions
+        case DeformationMode::Basic:
+            // set goal positions
+            for(auto& particle : m_listOfParticles)
+            {
                 particle.setGoalPosition(m_R * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
-                break;
-            case DeformationMode::Linear:
-                // calculate linear matrix 
-                m_A = m_Apq * m_Aqq;   
-                // scale A to ensure det(A) = 1
-                m_A /= pow(glm::determinant(m_A) > 0.1f ? glm::determinant(m_A) : 0.1f, 1/3.0f);
-                // set goal positions
+            }
+            break;
+        case DeformationMode::Linear:
+            // calculate linear matrix 
+            m_A = m_Apq * m_Aqq;   
+            // scale A to ensure det(A) = 1
+            m_A /= pow(glm::determinant(m_A) > 0.1f ? glm::determinant(m_A) : 0.1f , 1/3.0f);
+            // set goal positions
+            for(auto& particle : m_listOfParticles)
+            {
                 particle.setGoalPosition((m_beta * m_A + (1.0f-m_beta) * m_R) * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
-                break;
-            case DeformationMode::Quadratic:
-                break;
-            default: 
-                std::cout<<"Error, there is no mode"<<std::endl;
-        }
+            }
+            break;
+        case DeformationMode::Quadratic:
+            break;
+        default: 
+            std::cout<<"Error, there is no mode"<<std::endl;
     }
     // add shape mathcing by translatinjg poositions towards goal positions
     for(auto& particle : m_listOfParticles)
@@ -150,7 +154,7 @@ glm::mat3 DeformableObject::calculateR()
     return  m_Apq * S_inverseGlm;
 }
 /// ---------------------------------------------------------
-void DeformableObject::setParameters(float _mass, glm::vec3 _gravity)
+void DeformableObject::setParameters(float _mass)
 {
     for(auto& part : m_listOfParticles)
     {

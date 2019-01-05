@@ -136,7 +136,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         // for particle in deformable object
         // set attributes
         ps->setMode(block.inputValue(Mode).asInt());
-        ps->setParameters(block.inputValue(Mass).asFloat(), glm::vec3(velocityX, velocityY, velocityZ));
+        ps->setParameters(block.inputValue(Mass).asFloat());
         float stiffness =block.inputValue(Stiffness).asFloat(); 
         ps->setBeta(block.inputValue(Beta).asFloat());
         if(ps)

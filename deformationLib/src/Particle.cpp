@@ -137,6 +137,16 @@ void Particle::updatePosition(float _timeStep)
 void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
 {
     // set velocity elasticity
-    m_velocity +=  0.2f *_stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
+    m_velocity +=  0.5f * _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
+}
+//---------------------------------------------------------------------
+void Particle::setQtilde(arma::mat _qtilde)
+{
+    m_qtilde = std::move(_qtilde);
+}
+//---------------------------------------------------------------------
+arma::mat Particle::getQtilde()
+{
+    return m_qtilde;
 }
