@@ -111,6 +111,11 @@ class DeformableObject
         glm::mat3 m_Aqq; 
         // transformation matrix
         glm::mat3 m_A;
+        // quadratic matrix
+        Eigen::MatrixXf m_AqqTilde = Eigen::MatrixXf(9,9);
+        Eigen::MatrixXf m_ApqTilde = Eigen::MatrixXf(3,9);
+        Eigen::MatrixXf m_ATilde = Eigen::MatrixXf(3,9);
+        Eigen::MatrixXf m_RTilde = Eigen::MatrixXf::Zero(3,9);
         // mode of the deformation (basic. linear, quadratic)
         int m_mode; 
         // mode of the deformation (basic. linear, quadratic)

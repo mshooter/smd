@@ -41,7 +41,20 @@ TEST(DeformableObject, constructor)
     EXPECT_EQ(q_7, glm::vec3(0.5f, -0.5, -0.5f));
     glm::mat3 scalarMatrix(2.0f);
     // scalar matrix
-    EXPECT_EQ(def.getAqq(), glm::mat3(2.0f)); 
+    glm::mat3 test; 
+    test[0][0] = 0.5f;
+    test[0][1] = 0.0f;
+    test[0][2] = 0.0f;
+
+    test[1][0] = 0.0f;
+    test[1][1] = 0.5f;
+    test[1][2] = 0.0f;
+
+    test[2][0] = 0.0f;
+    test[2][1] = 0.0f;
+    test[2][2] = 0.5f;
+
+    EXPECT_EQ(def.getAqq(), test);
 }
 /// ----------------------------------------------------------------------------
 TEST(DeformableObject, calculateR )

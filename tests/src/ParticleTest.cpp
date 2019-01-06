@@ -179,3 +179,39 @@ TEST(Particle, shapeMatchUpdate)
     EXPECT_EQ(particle.getVelocity().z, 0.0f);
     EXPECT_EQ(particle.getCurrentPosition(), glm::vec3(0.8f, 0.005f, 0.0f));
 }
+
+TEST(Particle, outerProduct)
+{
+    glm::vec3 q(1.0f, 2.0f, 3.0f);
+    glm::vec3 p(2.0f, 1.0f, 2.0f);
+    glm::mat3 result = glm::outerProduct(q,p);
+    glm::mat3 test; 
+    test[0][0] = 1.0f;
+    test[0][1] = 2.0f;
+    test[0][2] = 3.0f;
+
+    test[1][0] = 2.0f;
+    test[1][1] = 4.0f;
+    test[1][2] = 6.0f;
+    
+    test[2][0] = 3.0f;
+    test[2][1] = 6.0f;
+    test[2][2] = 9.0f;
+
+    EXPECT_EQ(result, test);
+
+}
+TEST(Particle, qTilde)
+{
+    std::vector<float> qTilde; 
+    qTilde.resize(9);
+    for(int i=0; i<9; ++i)
+    {
+        qTilde[i] = i;
+    }
+    EXPECT_EQ(qTilde[0], 0);
+    EXPECT_EQ(qTilde[8], 8);
+
+
+}
+

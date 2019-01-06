@@ -25,8 +25,23 @@ DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, gl
     }
     // inverse of m_Aqq
     m_Aqq = glm::inverse(m_Aqq);
-
-
+    // calculate qtilde
+    for(auto& particle : m_listOfParticles)
+    {
+        auto x=particle.getQ().x;
+        auto y=particle.getQ().y;
+        auto z=particle.getQ().z;
+        Eigen::VectorXf q = Eigen::VectorXf(9,1);
+        q << x, y, z, x * x, y * y, z * z, x * y, y * z, z * x;
+        particle.setQTilde(q);
+    }
+    // m_Aqq
+    for(auto& particle : m_listOfParticles)
+    {
+        auto q = particle.getQTilde();
+        m_AqqTilde += (q * q.transpose()) * particle.getMass();
+    }
+    m_AqqTilde = m_AqqTilde.inverse();
 }
 // ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
@@ -63,17 +78,19 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     // calculate matrices
     for(auto& particle : m_listOfParticles)
     {
-        m_Apq += particle.getMass() * glm::outerProduct(particle.getQ(), particle.getP());
+        // this was wrong all the time
+        // outerproduct checks now
+        m_Apq += particle.getMass() * glm::outerProduct(particle.getP(), particle.getQ());
+        Eigen::Vector3f p({particle.getP().x, particle.getP().y, particle.getP().z});
+        m_ApqTilde += particle.getMass() * (p * particle.getQTilde().transpose());
     }
     // calculate R 
     m_R = calculateR();
-//  if(glm::determinant(m_R)<0)
-//  {
-//      m_R[2][0] = -m_R[2][0];
-//      m_R[2][1] = -m_R[2][1];
-//      m_R[2][2] = -m_R[2][2];
-//  }
     // basic mode
+    float det = 0;
+    float cbrt = 0;
+    Eigen::Vector3f g = Eigen::Vector3f::Zero();
+    Eigen::MatrixXf identity = Eigen::MatrixXf::Identity(9,9);
     switch(m_mode)
     {
         case DeformationMode::Basic:
@@ -86,8 +103,10 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
         case DeformationMode::Linear:
             // calculate linear matrix 
             m_A = m_Apq * m_Aqq;   
+            det = glm::determinant(m_A);
+            cbrt = pow(fabs(det), 1.0/3.0);
             // scale A to ensure det(A) = 1
-            m_A /= pow(glm::determinant(m_A) > 0.1f ? glm::determinant(m_A) : 0.1f , 1/3.0f);
+            m_A /= det < 0 ? -cbrt : cbrt; 
             // set goal positions
             for(auto& particle : m_listOfParticles)
             {
@@ -95,6 +114,34 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             }
             break;
         case DeformationMode::Quadratic:
+            // ATilde
+            m_ATilde = m_ApqTilde * m_AqqTilde;
+            // RTilde
+           for(int i=0; i < 3; ++i)
+           {
+               for(int j=0; j < 3; ++j)
+               {
+                   m_RTilde(i,j) = m_R[i][j];
+               }
+           }
+            // scale ATilde 
+            for(int i=0; i<3; ++i)
+            {
+                for(int j=0; j<9; ++j)
+                {
+                    identity(i,j) = m_ATilde(i,j);
+                }
+            }
+            // det 
+            det = identity.determinant();
+            cbrt = pow(fabs(det), 1.0/9.0);
+            m_ATilde /= det < 0 ? -cbrt : cbrt;
+            // formula
+            for(auto& particle : m_listOfParticles)
+            {
+                g = (m_beta * m_ATilde + (1.0f - m_beta) * m_RTilde) * particle.getQTilde();
+                particle.setGoalPosition(glm::vec3(g(0), g(1), g(2)) + centerOfMass);
+            }
             break;
         default: 
             std::cout<<"Error, there is no mode"<<std::endl;
@@ -136,12 +183,12 @@ glm::vec3 DeformableObject::computeCOM()
 glm::mat3 DeformableObject::calculateR()
 {
     // might use eigen as a library
-    glm::mat3 S = m_Apq * glm::transpose(m_Apq); 
+    glm::mat3 S = glm::transpose(m_Apq) * m_Apq; 
     // convert to an eigen matrix
     Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seig(&S[0][0]);
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> Seigsq(Seig);
     Eigen::Matrix<float, 3,3, Eigen::RowMajor> S_inverse = Seigsq.operatorInverseSqrt();
-    // convert the S_inverse to glm 
+    //convert the S_inverse to glm 
     glm::mat3 S_inverseGlm(0.0f);
     for(int i=0; i < 3; ++i)
     {
@@ -166,3 +213,4 @@ glm::mat3 DeformableObject::getAqq()
 {
     return m_Aqq;
 }
+/// ---------------------------------------------------------

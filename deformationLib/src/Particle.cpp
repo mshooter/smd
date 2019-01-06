@@ -127,26 +127,19 @@ void Particle::updatePosition(float _timeStep)
 {
     // update position 
     m_currentPosition += _timeStep * m_velocity;
-    // update position 
-    if(m_currentPosition.y <= 0)
-    {
-        m_currentPosition.y = 0.01f;
-    }
 }
 //---------------------------------------------------------------------
 void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
 {
     // set velocity elasticity
-    m_velocity +=  0.5f * _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
+    m_velocity +=  _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }
-//---------------------------------------------------------------------
-void Particle::setQtilde(arma::mat _qtilde)
+Eigen::VectorXf Particle::getQTilde()
 {
-    m_qtilde = std::move(_qtilde);
+    return m_qTilde;
 }
-//---------------------------------------------------------------------
-arma::mat Particle::getQtilde()
+void Particle::setQTilde(Eigen::VectorXf _qtilde)
 {
-    return m_qtilde;
+    m_qTilde = std::move(_qtilde);
 }
