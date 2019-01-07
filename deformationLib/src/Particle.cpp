@@ -135,10 +135,12 @@ void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
     m_velocity +=  _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }
+//---------------------------------------------------------------------
 Eigen::VectorXf Particle::getQTilde()
 {
     return m_qTilde;
 }
+//---------------------------------------------------------------------
 void Particle::setQTilde(Eigen::VectorXf _qtilde)
 {
     m_qTilde = std::move(_qtilde);

@@ -108,12 +108,19 @@ class DeformableObject
         /// ---------------------------------------------------------
         glm::mat3 m_R;
         // symmetric matrix 
-        glm::mat3 m_Aqq; 
+        glm::mat3 m_Aqq = glm::mat3(0.0f); 
         // transformation matrix
-        glm::mat3 m_A;
+        glm::mat3 m_A = glm::mat3(0.0f);
         // quadratic matrix
+        Eigen::MatrixXf m_AR = Eigen::MatrixXf::Zero(3,9);
+        Eigen::Matrix3f m_ARA;
+        Eigen::Matrix3f m_ARQ;
+        Eigen::Matrix3f m_ARM;
+        glm::mat3 m_ARAgl;
+        glm::mat3 m_ARQgl;
+        glm::mat3 m_ARMgl;
         Eigen::MatrixXf m_AqqTilde = Eigen::MatrixXf(9,9);
-        Eigen::MatrixXf m_ApqTilde = Eigen::MatrixXf(3,9);
+        Eigen::MatrixXf m_ApqTilde = Eigen::MatrixXf::Zero(3,9);
         Eigen::MatrixXf m_ATilde = Eigen::MatrixXf(3,9);
         Eigen::MatrixXf m_RTilde = Eigen::MatrixXf::Zero(3,9);
         // mode of the deformation (basic. linear, quadratic)

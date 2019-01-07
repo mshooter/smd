@@ -4,6 +4,20 @@
 #include "math.h"
 
 const char* path = "models/cube.obj";
+TEST(DeformableObject, shapeMatch)
+{
+    Mesh3D mesh(path);
+    DeformableObject def(mesh.getVertexPositions(), glm::vec3(.0f, .0f, .0f));
+    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(0), -0.5f);
+    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(1), -0.5f);
+    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(2), 0.5f);
+
+    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(3), 0.25f);
+    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(4), 0.25f);
+    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(5), 0.25f);
+
+    
+}
 TEST(DeformableObject, constructor)
 {
     // load mesh and get list of vertices

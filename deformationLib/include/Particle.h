@@ -181,7 +181,6 @@ class Particle
         /// @build  force of the particle   
         /// ---------------------------------------------------------
         glm::vec3 m_force;
-        Eigen::VectorXf m_qTilde = Eigen::VectorXf(9,1); 
+        Eigen::VectorXf m_qTilde=Eigen::VectorXf(9);
 };
-
 #endif // _PARTICLE_H_
