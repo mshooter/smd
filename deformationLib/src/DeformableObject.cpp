@@ -42,11 +42,11 @@ DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, gl
         auto q = particle.getQTilde();
         m_AqqTilde += (q * q.transpose()) * particle.getMass();
     }
-    if(glm::determinant(m_AqqTilde) == 0)
-    {
-        m_AqqTilde = 
-    }
-    m_AqqTilde = m_AqqTilde.inverse();
+
+    Eigen::HouseholderQR<Eigen::MatrixXf> qr;
+    qr.compute(m_AqqTilde);
+    m_AqqTilde = qr.solve(Eigen::MatrixXf::Identity(9,9));
+    std::cout<<m_AqqTilde<<'\n';
 }
 // ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
@@ -100,6 +100,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
 //   }
     // basic mode
     float det = 0;
+    float cbrt =0;
     Eigen::MatrixXf identity = Eigen::MatrixXf::Identity(9,9);
     Eigen::MatrixXf temp = Eigen::MatrixXf::Zero(3,9);
     Eigen::Vector3f g; 
@@ -117,7 +118,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             m_A = m_Apq * m_Aqq;   
             det = glm::determinant(m_A);
             // scale A to ensure det(A) = 1
-            m_A /= pow(det > 0.1f ? det : 0.1f, 1.0/3.0f); 
+            m_A /= pow(det > 0.1f ? det :  0.1f, 1.0/3.0f); 
             // set goal positions
             for(auto& particle : m_listOfParticles)
             {
@@ -126,6 +127,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             break;
         case DeformationMode::Quadratic:
 
+            // 3x9
             m_RTilde(0,0) = m_R[0][0];
             m_RTilde(0,1) = m_R[0][1];
             m_RTilde(0,2) = m_R[0][2];
@@ -138,6 +140,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             m_RTilde(2,1) = m_R[2][1];
             m_RTilde(2,2) = m_R[2][2];
             
+            // 3x9
             m_ATilde = m_ApqTilde * m_AqqTilde;
 
             identity(0,0) = m_ATilde(0,0);
@@ -152,8 +155,10 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             identity(2,1) = m_ATilde(2,1);
             identity(2,2) = m_ATilde(2,2);
             
-            det = identity.determinant();
-            identity /= pow(det>0.1f?det:0.1f,1.0/9.0f);
+            // scale
+            identity /= pow(identity.determinant()>0.1f?identity.determinant():0.1f,1.0/9.0f);
+
+            // 3x9
             m_ATilde(0,0) = identity(0,0);
             m_ATilde(0,1) = identity(0,1);
             m_ATilde(0,2) = identity(0,2);
@@ -166,7 +171,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             m_ATilde(2,1) = identity(2,1);
             m_ATilde(2,2) = identity(2,2);
 
-            temp = (m_beta * m_ATilde + (1.0f - m_beta) * m_RTilde);
+            temp = (m_beta * m_ATilde + (1.0f - m_beta) * Eigen::MatrixXf::Identity(3,9));
             for(auto& particle : m_listOfParticles)
             {
                 g = temp * particle.getQTilde();
