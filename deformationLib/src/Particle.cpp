@@ -103,13 +103,13 @@ void Particle::updateForces(float _timeStep)
     // add collision
     if(m_currentPosition.y <= 0)
     {
-//        m_velocity *= - 0.5f;
-        glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 deltaV = m_velocity - glm::vec3(0.0f, 0.0f, 0.0f); 
-        glm::vec3 composant = normal * glm::dot(normal, deltaV); 
-        glm::vec3 collisionImp = -(0.2f+1.0f) * normal * glm::dot(normal, deltaV) * m_mass;
-        glm::vec3 frictionImp = -0.2f * (deltaV - composant) * m_mass;
-        m_force += (collisionImp + frictionImp) / _timeStep;
+        m_velocity *= -0.5f;
+      //glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+      //glm::vec3 deltaV = m_velocity - glm::vec3(0.0f, 0.0f, 0.0f); 
+      //glm::vec3 composant = normal * glm::dot(normal, deltaV); 
+      //glm::vec3 collisionImp = -(0.1f+1.0f) * normal * glm::dot(normal, deltaV) * m_mass;
+      //glm::vec3 frictionImp = -1.0f * (deltaV - composant) * m_mass;
+      //m_force += (collisionImp + frictionImp) / _timeStep;
         // add other forces together
         m_currentPosition.y = 0.01f; 
     }
@@ -132,7 +132,7 @@ void Particle::updatePosition(float _timeStep)
 void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
 {
     // set velocity elasticity
-    m_velocity +=  _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
+    m_velocity +=  0.2f * _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }
 //---------------------------------------------------------------------

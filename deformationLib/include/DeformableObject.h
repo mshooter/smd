@@ -119,7 +119,7 @@ class DeformableObject
         glm::mat3 m_ARAgl;
         glm::mat3 m_ARQgl;
         glm::mat3 m_ARMgl;
-        Eigen::MatrixXf m_AqqTilde = Eigen::MatrixXf(9,9);
+        Eigen::MatrixXf m_AqqTilde = Eigen::MatrixXf::Zero(9,9);
         Eigen::MatrixXf m_ApqTilde = Eigen::MatrixXf::Zero(3,9);
         Eigen::MatrixXf m_ATilde = Eigen::MatrixXf(3,9);
         Eigen::MatrixXf m_RTilde = Eigen::MatrixXf::Zero(3,9);

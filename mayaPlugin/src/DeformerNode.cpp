@@ -70,7 +70,7 @@ MStatus DeformerNode::initialize()
     nAttr.setMin(-10.0f);
     nAttr.setMax(10.0f);
 
-    Beta = nAttr.create("Beta", "ba", MFnNumericData::kFloat, 0.2f);
+    Beta = nAttr.create("Beta", "ba", MFnNumericData::kFloat, 0.0f);
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
     // add attributes
