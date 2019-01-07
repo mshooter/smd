@@ -93,6 +93,12 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     }
     // calculate R 
     m_R = calculateR();
+    if(glm::determinant(m_R) < 0)
+    {
+        m_R[0][2] = -m_R[0][2];
+		m_R[1][2] = -m_R[1][2];
+		m_R[2][2] = -m_R[2][2];
+    }
     // basic mode
     float det = 0;
     switch(m_mode)
@@ -177,7 +183,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
                 for(int j=0; j<3; ++j)
                 {
                     m_ARAgl[i][j] = m_ARA(i,j);
-                    m_ARQgl[i][j] = m_ARQ(i,j);
+                    m_ARQgl[i][j] = m_ARQ(j,i);
                     m_ARMgl[i][j] = m_ARM(i,j);
                 }
             }
