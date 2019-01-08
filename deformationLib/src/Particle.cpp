@@ -124,10 +124,10 @@ void Particle::updatePosition(float _timeStep)
     m_currentPosition += _timeStep * m_velocity;
 }
 //---------------------------------------------------------------------
-void Particle::shapeMatchUpdate(float _timeStep, float _stiffness)
+void Particle::shapeMatchUpdate(float _timeStep, float _stiffness, float _bounciness)
 {
     // set velocity elasticity
-    m_velocity +=  0.2f * _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
+    m_velocity +=  _bounciness * _stiffness * (m_goalPosition - m_currentPosition) / _timeStep; 
     m_currentPosition += _stiffness * (m_goalPosition - m_currentPosition);
 }
 //---------------------------------------------------------------------

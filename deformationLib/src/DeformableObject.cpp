@@ -65,7 +65,7 @@ void DeformableObject::update(float _timeStep, std::vector<float> _impuls)
     }
 }
 /// ---------------------------------------------------------
-void DeformableObject::shapematching(float _timeStep, float _stiffness)
+void DeformableObject::shapematching(float _timeStep, float _stiffness, float _bounciness)
 {
     m_Apq = glm::mat3(0.0f);
     m_ApqTilde = Eigen::MatrixXf::Zero(3,9);
@@ -156,7 +156,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     // add shape mathcing by translatinjg poositions towards goal positions
     for(auto& particle : m_listOfParticles)
     {
-        particle.shapeMatchUpdate(_timeStep, _stiffness);
+        particle.shapeMatchUpdate(_timeStep, _stiffness, _bounciness);
     }
 }
 /// ---------------------------------------------------------

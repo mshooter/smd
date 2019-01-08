@@ -18,6 +18,7 @@ MObject DeformerNode::Beta;
 MObject DeformerNode::Velocity;
 MObject DeformerNode::Friction;
 MObject DeformerNode::Elasticity;
+MObject DeformerNode::Bounciness;
 MTime DeformerNode::PreviousTime;
 DeformableObject* DeformerNode::ps; 
 
@@ -68,6 +69,10 @@ MStatus DeformerNode::initialize()
     Elasticity = nAttr.create("Elasticity", "el", MFnNumericData::kFloat, 0.5f);
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
+    
+    Bounciness = nAttr.create("Bounciness", "bs", MFnNumericData::kFloat, 0.5f);
+    nAttr.setMin(0.0f);
+    nAttr.setMax(1.0f);
 
     MObject velx = nAttr.create( "velx", "vx", MFnNumericData::kFloat, 0.0f );
     MObject vely = nAttr.create( "vely", "vy", MFnNumericData::kFloat, 0.0f );
@@ -84,6 +89,7 @@ MStatus DeformerNode::initialize()
     addAttribute(Beta);
     addAttribute(Friction);
     addAttribute(Elasticity);
+    addAttribute(Bounciness);
     addAttribute(Velocity);
 
     // affecting - dependencies 
@@ -95,6 +101,7 @@ MStatus DeformerNode::initialize()
     attributeAffects(Beta, outputGeom);
     attributeAffects(Friction, outputGeom);
     attributeAffects(Elasticity, outputGeom);
+    attributeAffects(Bounciness, outputGeom);
     attributeAffects(Velocity, outputGeom);
 
     return MStatus::kSuccess;
@@ -139,6 +146,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
         // coll = elasticity first
         impulse[0] = block.inputValue(Elasticity).asFloat();
         impulse[1] = block.inputValue(Friction).asFloat();
+        float bounce = block.inputValue(Bounciness).asFloat();
         if(ps)
         {
             float deltaTimeValue = delta_time.value();
@@ -147,7 +155,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             {
                 // update and shape match  
                 ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), impulse);
-                ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), stiffness);
+                ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), stiffness, bounce);
             }
         }
         else

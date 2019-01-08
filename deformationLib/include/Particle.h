@@ -137,7 +137,7 @@ class Particle
         /// @param[_in] _timeStep : the time for a 'frame'
         /// @param[_in] _stiffness : stiffness of the deformable object
         /// ---------------------------------------------------------
-        void shapeMatchUpdate(float _timeStep, float _stiffness);
+        void shapeMatchUpdate(float _timeStep, float _stiffness, float _bounciness);
         void setQTilde(Eigen::VectorXf _qtilde);
         Eigen::VectorXf getQTilde();
     private:

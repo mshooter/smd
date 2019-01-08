@@ -65,7 +65,7 @@ class DeformableObject
         /// @build shape matching function
         /// @param[_in] _timeStep 
         /// ---------------------------------------------------------
-        void shapematching(float _timeStep, float _stiffness);
+        void shapematching(float _timeStep, float _stiffness, float _bounciness);
         /// ---------------------------------------------------------
         /// @build get Mode
         /// ---------------------------------------------------------

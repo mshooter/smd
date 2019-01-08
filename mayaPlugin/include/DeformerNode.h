@@ -33,6 +33,7 @@ class DeformerNode : public MPxDeformerNode
         static MTime PreviousTime;
         static MObject Friction;
         static MObject Elasticity;
+        static MObject Bounciness;
         static DeformableObject* ps; 
 };
 
