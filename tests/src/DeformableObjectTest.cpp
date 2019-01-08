@@ -4,19 +4,14 @@
 #include "math.h"
 
 const char* path = "models/cube.obj";
+const char* paths = "models/cubes.obj";
 TEST(DeformableObject, shapeMatch)
 {
-    Mesh3D mesh(path);
-    DeformableObject def(mesh.getVertexPositions(), glm::vec3(.0f, .0f, .0f));
-    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(0), -0.5f);
-    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(1), -0.5f);
-    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(2), 0.5f);
-
-    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(3), 0.25f);
-    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(4), 0.25f);
-    ASSERT_EQ(def.getListOfParticles()[0].getQTilde()(5), 0.25f);
-
-    
+    Mesh3D mesh(paths);
+    DeformableObject def(mesh.getVertexPositions(), glm::vec3(0.0f));
+    def.setMode(2);
+    def.update(2.0f);
+    def.shapematching(2.0f, 1.0f);
 }
 TEST(DeformableObject, constructor)
 {

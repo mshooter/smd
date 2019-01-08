@@ -18,7 +18,6 @@ QMAKE_CXXFLAGS += -std=c++14 -fPIC -g -O3
 INCLUDEPATH += \
     /usr/local/include/glm \ 
     /usr/local/include \ 
-    /usr/local/Cellar/armadillo/9.100.5_2/include/ \
     $$PWD/include \
     /public/devel/2018/include \
     /public/devel/2018/include/eigen3 \

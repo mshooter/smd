@@ -1,12 +1,10 @@
 #include "DeformableObject.h"
 #include <cmath>
 #include <math.h>
-
 DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, glm::vec3 _vel)
 {
     m_mode = 0;
     m_Aqq = glm::mat3(0.0f);
-    m_AqqTilde = Eigen::MatrixXf::Zero(9,9);
     // reset all attributes
     for(unsigned int i = 0 ; i < _originalPositions.size(); ++i)
     {
@@ -42,11 +40,9 @@ DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, gl
         auto q = particle.getQTilde();
         m_AqqTilde += (q * q.transpose()) * particle.getMass();
     }
-
     Eigen::HouseholderQR<Eigen::MatrixXf> qr;
     qr.compute(m_AqqTilde);
     m_AqqTilde = qr.solve(Eigen::MatrixXf::Identity(9,9));
-    std::cout<<m_AqqTilde<<'\n';
 }
 // ---------------------------------------------------------
 std::vector<Particle> DeformableObject::getListOfParticles()
@@ -81,23 +77,6 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
         particle.setP(particle.getCurrentPosition() - centerOfMass);
         
     }
-    // calculate matrices
-    for(auto& particle : m_listOfParticles)
-    {
-        // this was wrong all the time
-        // outerproduct checks now
-        m_Apq += particle.getMass() * glm::outerProduct(particle.getP(), particle.getQ());
-        Eigen::Vector3f p({particle.getP().x, particle.getP().y, particle.getP().z});
-        m_ApqTilde += particle.getMass() * (p * particle.getQTilde().transpose());
-    }
-    // calculate R 
-    m_R = calculateR();
-//   if(glm::determinant(m_R) < 0)
-//   {
-//       m_R[0][2] = -m_R[0][2];
-//   	m_R[1][2] = -m_R[1][2];
-//   	m_R[2][2] = -m_R[2][2];
-//   }
     // basic mode
     float det = 0;
     float cbrt =0;
@@ -107,6 +86,16 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
     switch(m_mode)
     {
         case DeformationMode::Basic:
+    // calculate matrices
+    for(auto& particle : m_listOfParticles)
+    {
+        // this was wrong all the time
+        // outerproduct checks now
+        m_Apq += particle.getMass() * glm::outerProduct(particle.getP(), particle.getQ());
+    }
+    // calculate R 
+    m_R = calculateR();
+
             // set goal positions
             for(auto& particle : m_listOfParticles)
             {
@@ -114,6 +103,16 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             }
             break;
         case DeformationMode::Linear:
+    // calculate matrices
+    for(auto& particle : m_listOfParticles)
+    {
+        // this was wrong all the time
+        // outerproduct checks now
+        m_Apq += particle.getMass() * glm::outerProduct(particle.getP(), particle.getQ());
+    }
+    // calculate R 
+    m_R = calculateR();
+
             // calculate linear matrix 
             m_A = m_Apq * m_Aqq;   
             det = glm::determinant(m_A);
@@ -126,20 +125,26 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             }
             break;
         case DeformationMode::Quadratic:
-
-            // 3x9
-            m_RTilde(0,0) = m_R[0][0];
-            m_RTilde(0,1) = m_R[0][1];
-            m_RTilde(0,2) = m_R[0][2];
-            
-            m_RTilde(1,0) = m_R[1][0];
-            m_RTilde(1,1) = m_R[1][1];
-            m_RTilde(1,2) = m_R[1][2];
-
-            m_RTilde(2,0) = m_R[2][0];
-            m_RTilde(2,1) = m_R[2][1];
-            m_RTilde(2,2) = m_R[2][2];
-            
+            // calculate matrices
+            for(auto& particle : m_listOfParticles)
+            {
+                // this was wrong all the time
+                // outerproduct checks now
+                   m_Apq += particle.getMass() * glm::outerProduct(particle.getQ(), particle.getP());
+                Eigen::Vector3f p({particle.getP().x, particle.getP().y, particle.getP().z});
+                m_ApqTilde += particle.getMass() * (p * particle.getQTilde().transpose());
+                
+            }
+            // calculate R 
+            m_R = calculateR();
+            // quadratic Tilde
+            for(int i=0; i<3;++i)
+            {
+                for(int j=0; j<3; ++j)
+                {
+                    m_RTilde(i,j) = m_R[i][j];
+                }
+            }
             // 3x9
             m_ATilde = m_ApqTilde * m_AqqTilde;
 
@@ -156,7 +161,8 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             identity(2,2) = m_ATilde(2,2);
             
             // scale
-            identity /= pow(identity.determinant()>0.1f?identity.determinant():0.1f,1.0/9.0f);
+            det = identity.determinant();
+            identity /= pow(det > .1f?det:0.1f,1.0/9.0f);
 
             // 3x9
             m_ATilde(0,0) = identity(0,0);
@@ -171,7 +177,8 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness)
             m_ATilde(2,1) = identity(2,1);
             m_ATilde(2,2) = identity(2,2);
 
-            temp = (m_beta * m_ATilde + (1.0f - m_beta) * Eigen::MatrixXf::Identity(3,9));
+            temp = (m_beta * m_ATilde + (1.0f - m_beta) * m_RTilde);
+//            temp = (m_beta * m_ATilde + (1.0f - m_beta) * m_RTilde);
             for(auto& particle : m_listOfParticles)
             {
                 g = temp * particle.getQTilde();
