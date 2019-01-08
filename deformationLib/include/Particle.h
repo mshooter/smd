@@ -118,14 +118,10 @@ class Particle
         /// ---------------------------------------------------------
         void setForce(glm::vec3 _force);
         /// ---------------------------------------------------------
-        /// @build set gravity  
-        /// ---------------------------------------------------------
-        void setGravity(glm::vec3 _gravity);
-        /// ---------------------------------------------------------
         /// @build update force method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
         /// ---------------------------------------------------------
-        void updateForces(float _timeStep);       
+        void updateForces(float _timeStep, std::vector<float> _impuls);       
         /// ---------------------------------------------------------
         /// @build update velocity method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'

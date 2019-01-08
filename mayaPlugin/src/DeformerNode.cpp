@@ -5,20 +5,20 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MAnimControl.h>
 #include <maya/MGlobal.h>
+
 #define SIGN(a) (a < 0 ? -1 : 1)
 
 MTypeId DeformerNode::id(0x0100F);
-MObject DeformerNode::Stiffness;
-MObject DeformerNode::VelocityX;
-MObject DeformerNode::VelocityY;
-MObject DeformerNode::VelocityZ;
-MObject DeformerNode::Mass; 
-MObject DeformerNode::Beta;
-MObject DeformerNode::CurrentTime; 
 bool DeformerNode::isFirstFrame;
+MObject DeformerNode::CurrentTime; 
 MObject DeformerNode::Mode;
+MObject DeformerNode::Mass; 
+MObject DeformerNode::Stiffness;
+MObject DeformerNode::Beta;
+MObject DeformerNode::Velocity;
+MObject DeformerNode::Friction;
+MObject DeformerNode::Elasticity;
 MTime DeformerNode::PreviousTime;
-
 DeformableObject* DeformerNode::ps; 
 
 
@@ -40,16 +40,7 @@ MStatus DeformerNode::initialize()
     CurrentTime = uAttr.create("CurrentTime", "ct", MFnUnitAttribute::kTime, 0.0);
     uAttr.setDefault(MAnimControl::currentTime().as(MTime::kFilm));
     uAttr.setChannelBox(true);
-
-    Stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kFloat, 1.0);
-    nAttr.setChannelBox(true);
-    nAttr.setMin(0.0f);
-    nAttr.setMax(1.0f);
-    
-    Mass = nAttr.create("Mass", "mas", MFnNumericData::kFloat, 1.0);
-    nAttr.setChannelBox(true);
-    nAttr.setMin(0.0);
-    nAttr.setMax(10.0);
+    uAttr.setHidden(true);
 
     Mode = eAttr.create("Mode", "mod", 0);
     eAttr.setStorable(true);
@@ -58,40 +49,54 @@ MStatus DeformerNode::initialize()
     eAttr.addField("Linear", 1);
     eAttr.addField("Quadratic", 2);
 
-    VelocityX = nAttr.create("VelocityX", "gx", MFnNumericData::kFloat, 0.0f);
-    nAttr.setMin(-10.0f);
-    nAttr.setMax(10.0f);
+    Mass = nAttr.create("Mass", "mas", MFnNumericData::kFloat, 1.0);
+    nAttr.setMin(0.0);
+    nAttr.setMax(10.0);
 
-    VelocityY = nAttr.create("VelocityY", "gy", MFnNumericData::kFloat, 0.0f);
-    nAttr.setMin(-10.0f);
-    nAttr.setMax(10.0f);
+    Stiffness = nAttr.create("Stiffness", "st", MFnNumericData::kFloat, 1.0);
+    nAttr.setMin(0.0f);
+    nAttr.setMax(1.0f);
     
-    VelocityZ = nAttr.create("VelocityZ", "gz", MFnNumericData::kFloat, 0.0f);
-    nAttr.setMin(-10.0f);
-    nAttr.setMax(10.0f);
-
     Beta = nAttr.create("Beta", "ba", MFnNumericData::kFloat, 0.0f);
     nAttr.setMin(0.0f);
     nAttr.setMax(1.0f);
+
+    Friction = nAttr.create("Friction", "fr", MFnNumericData::kFloat, 0.5f);
+    nAttr.setMin(0.0f);
+    nAttr.setMax(1.0f);
+    
+    Elasticity = nAttr.create("Elasticity", "el", MFnNumericData::kFloat, 0.5f);
+    nAttr.setMin(0.0f);
+    nAttr.setMax(1.0f);
+
+    MObject velx = nAttr.create( "velx", "vx", MFnNumericData::kFloat, 0.0f );
+    MObject vely = nAttr.create( "vely", "vy", MFnNumericData::kFloat, 0.0f );
+    MObject velz = nAttr.create( "velz", "vz", MFnNumericData::kFloat, 0.0f );
+    Velocity = nAttr.create("Velocity", "v", velx, vely, velz);
+    nAttr.setMin(-10.0f);
+    nAttr.setMax(10.0f);
+
     // add attributes
     addAttribute(CurrentTime);
-    addAttribute(Stiffness);
-    addAttribute(Mass);
     addAttribute(Mode);
-    addAttribute(VelocityX);
-    addAttribute(VelocityY);
-    addAttribute(VelocityZ);
+    addAttribute(Mass);
+    addAttribute(Stiffness);
     addAttribute(Beta);
+    addAttribute(Friction);
+    addAttribute(Elasticity);
+    addAttribute(Velocity);
+
     // affecting - dependencies 
     // input - output 
     attributeAffects(CurrentTime, outputGeom);
-    attributeAffects(Stiffness, outputGeom);
-    attributeAffects(Mass, outputGeom);
     attributeAffects(Mode, outputGeom);
-    attributeAffects(VelocityX, outputGeom);
-    attributeAffects(VelocityY, outputGeom);
-    attributeAffects(VelocityZ, outputGeom);
+    attributeAffects(Mass, outputGeom);
+    attributeAffects(Stiffness, outputGeom);
     attributeAffects(Beta, outputGeom);
+    attributeAffects(Friction, outputGeom);
+    attributeAffects(Elasticity, outputGeom);
+    attributeAffects(Velocity, outputGeom);
+
     return MStatus::kSuccess;
 }
 ///-----------------------------------------
@@ -99,46 +104,41 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
 {
     // if first frame set up the values 
     MTime time_now = block.inputValue(CurrentTime).asTime();
-    float velocityX = block.inputValue(VelocityX).asFloat();
-    float velocityY = block.inputValue(VelocityY).asFloat();
-    float velocityZ = block.inputValue(VelocityZ).asFloat();
+    const float3 & velocity = block.inputValue(Velocity).asFloat3();
     if(isFirstFrame || time_now.value() == 1)
     {
        if(ps)
            delete ps;
         std::vector<glm::vec3> initial_positions_list; 
-        // initial velocity ? init 
-        // iterate through ever point of the mesh and set it to the initial position 
         PreviousTime = block.inputValue(CurrentTime).asTime();
         for(; !iter.isDone(); iter.next())
         {
-            // posintions in world coordinates 
             MPoint vertexPosition = iter.position() * localToWorldMatrix; 
             glm::vec3 pposition(vertexPosition.x, vertexPosition.y, vertexPosition.z);
             initial_positions_list.emplace_back(pposition);
         }
         // create particle system - deformable object
-        ps = new DeformableObject(initial_positions_list, glm::vec3(velocityX, velocityY, velocityZ));
+        ps = new DeformableObject(initial_positions_list, glm::vec3(velocity[0], velocity[1], velocity[2]));
         // set firstFrame to false 
         isFirstFrame = false; 
         return MS::kSuccess;
     }
     else
     {
-
         // fetch attriute values 
         time_now = block.inputValue(CurrentTime).asTime(); 
         MTime delta_time = time_now - PreviousTime; 
         PreviousTime = time_now;
-        velocityX = block.inputValue(VelocityX).asFloat();
-        velocityY = block.inputValue(VelocityY).asFloat();
-        velocityZ = block.inputValue(VelocityZ).asFloat();
         // for particle in deformable object
         // set attributes
         ps->setMode(block.inputValue(Mode).asInt());
         ps->setParameters(block.inputValue(Mass).asFloat());
         float stiffness =block.inputValue(Stiffness).asFloat(); 
         ps->setBeta(block.inputValue(Beta).asFloat());
+        std::vector<float> impulse(2); 
+        // coll = elasticity first
+        impulse[0] = block.inputValue(Elasticity).asFloat();
+        impulse[1] = block.inputValue(Friction).asFloat();
         if(ps)
         {
             float deltaTimeValue = delta_time.value();
@@ -146,7 +146,7 @@ MStatus DeformerNode::deform(MDataBlock& block, MItGeometry& iter, const MMatrix
             for(int i =0; i < abs(deltaTimeValue) * updatesPerTimeStep; ++i)
             {
                 // update and shape match  
-                ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue));
+                ps->update(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), impulse);
                 ps->shapematching(1/24.0/updatesPerTimeStep * SIGN(deltaTimeValue), stiffness);
             }
         }

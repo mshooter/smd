@@ -60,7 +60,7 @@ class DeformableObject
         /// @build update function
         /// @param[_in] _timeStep 
         /// ---------------------------------------------------------
-        void update(float _timeStep);
+        void update(float _timeStep, std::vector<float> _impuls);
         /// ---------------------------------------------------------
         /// @build shape matching function
         /// @param[_in] _timeStep 

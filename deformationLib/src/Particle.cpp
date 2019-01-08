@@ -90,12 +90,7 @@ void Particle::setForce(glm::vec3 _force)
     m_force = std::move(_force);
 }
 //---------------------------------------------------------------------
-void Particle::setGravity(glm::vec3 _gravity)
-{
-    m_gravity = std::move(_gravity);
-}
-//---------------------------------------------------------------------
-void Particle::updateForces(float _timeStep)
+void Particle::updateForces(float _timeStep, std::vector<float> _impuls)
 {
     // update force total force
     // gravity 
@@ -103,13 +98,13 @@ void Particle::updateForces(float _timeStep)
     // add collision
     if(m_currentPosition.y <= 0)
     {
-      //  m_velocity *= -0.5f;
-      glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
-      glm::vec3 deltaV = m_velocity - glm::vec3(0.0f, 0.0f, 0.0f); 
-      glm::vec3 composant = normal * glm::dot(normal, deltaV); 
-      glm::vec3 collisionImp = -(0.1f+1.0f) * normal * glm::dot(normal, deltaV) * m_mass;
-      glm::vec3 frictionImp = -1.0f * (deltaV - composant) * m_mass;
-      m_force += (collisionImp + frictionImp) / _timeStep;
+        //  m_velocity *= -0.5f;
+        glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 deltaV = m_velocity - glm::vec3(0.0f, 0.0f, 0.0f); 
+        glm::vec3 composant = normal * glm::dot(normal, deltaV); 
+        glm::vec3 collisionImp = -(_impuls[0]+1.0f) * normal * glm::dot(normal, deltaV) * m_mass;
+        glm::vec3 frictionImp = -_impuls[1] * (deltaV - composant) * m_mass;
+        m_force += (collisionImp + frictionImp) / _timeStep;
         // add other forces together
         m_currentPosition.y = 0.01f; 
     }
