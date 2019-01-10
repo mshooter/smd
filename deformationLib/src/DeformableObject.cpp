@@ -94,7 +94,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness, float _b
             // set goal positions
             for(auto& particle : m_listOfParticles)
             {
-                particle.setGoalPosition(m_R * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
+                particle.setGoalPosition(m_R * (particle.getQ()) + centerOfMass);
             }
             break;
         case DeformationMode::Linear:
@@ -106,7 +106,7 @@ void DeformableObject::shapematching(float _timeStep, float _stiffness, float _b
             // set goal positions
             for(auto& particle : m_listOfParticles)
             {
-                particle.setGoalPosition((m_beta * m_A + (1.0f-m_beta) * m_R) * (particle.getInitPosition() - m_originalCenterOfMass) + centerOfMass);
+                particle.setGoalPosition((m_beta * m_A + (1.0f-m_beta) * m_R) * (particle.getQ()) + centerOfMass);
             }
             break;
         case DeformationMode::Quadratic:
