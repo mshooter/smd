@@ -1,11 +1,11 @@
 # Build
 Build on OSX:   
+* Make sure the paths in the src/CMakeLists.txt are correctly set
 * mkdir build  
 * cd build 
 * cmake -G "Unix Makefiles" _DMAYA_VERSION=2017 ../ (or whatever version) 
 * you may have to specify MAYA_LIBRARY_DIR or/and MAYA_INCLUDE_DIR in cmake
 Compile on OSX:   
-* cd in build/   
 * sudo cmake --build . --config Release --target install 
 
 # Example instructions 

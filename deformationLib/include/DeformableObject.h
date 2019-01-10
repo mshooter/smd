@@ -59,11 +59,14 @@ class DeformableObject
         /// ---------------------------------------------------------
         /// @build update function
         /// @param[_in] _timeStep 
+        /// @param[_in] _impulse : the force  
         /// ---------------------------------------------------------
         void update(float _timeStep, std::vector<float> _impuls);
         /// ---------------------------------------------------------
         /// @build shape matching function
         /// @param[_in] _timeStep 
+        /// @param[_in] _stiffness 
+        /// @param[_in] _bounciness 
         /// ---------------------------------------------------------
         void shapematching(float _timeStep, float _stiffness, float _bounciness);
         /// ---------------------------------------------------------
@@ -88,7 +91,13 @@ class DeformableObject
         /// linear decomposition 
         /// ---------------------------------------------------------
         glm::mat3 calculateR();
+        /// ---------------------------------------------------------
+        /// @build initialise mass for deformer node maya
+        /// ---------------------------------------------------------
         void setParameters(float _mass);
+        /// ---------------------------------------------------------
+        /// @build get symmetric matrix
+        /// ---------------------------------------------------------
         glm::mat3 getAqq();
     private:
         /// ---------------------------------------------------------
@@ -107,23 +116,30 @@ class DeformableObject
         /// @build Rotational matrix  
         /// ---------------------------------------------------------
         glm::mat3 m_R;
-        // symmetric matrix 
+        /// ---------------------------------------------------------
+        /// @build symmetric matrix  
+        /// ---------------------------------------------------------
         glm::mat3 m_Aqq = glm::mat3(0.0f); 
-        // transformation matrix
+        /// ---------------------------------------------------------
+        /// @build linear transformation matrix
+        /// ---------------------------------------------------------
         glm::mat3 m_A = glm::mat3(0.0f);
-        // quadratic matrix
-        Eigen::MatrixXf m_AR = Eigen::MatrixXf::Zero(3,9);
-        Eigen::Matrix3f m_ARA;
-        Eigen::Matrix3f m_ARQ;
-        Eigen::Matrix3f m_ARM;
-        glm::mat3 m_ARAgl;
-        glm::mat3 m_ARQgl;
-        glm::mat3 m_ARMgl;
+        /// ---------------------------------------------------------
+        /// @build symmetric quatriatic matrix
+        /// ---------------------------------------------------------
         Eigen::MatrixXf m_AqqTilde = Eigen::MatrixXf::Zero(9,9);
+        /// ---------------------------------------------------------
+        /// @build rotational part quatriatic matrix
+        /// ---------------------------------------------------------
         Eigen::MatrixXf m_ApqTilde = Eigen::MatrixXf::Zero(3,9);
+        /// ---------------------------------------------------------
+        /// @build linear transformation quatriatic matrix
+        /// ---------------------------------------------------------
         Eigen::MatrixXf m_ATilde = Eigen::MatrixXf(3,9);
+        /// ---------------------------------------------------------
+        /// @build rotation quatriatic matrix
+        /// ---------------------------------------------------------
         Eigen::MatrixXf m_RTilde = Eigen::MatrixXf::Zero(3,9);
-
         // mode of the deformation (basic. linear, quadratic)
         int m_mode; 
         // mode of the deformation (basic. linear, quadratic)
