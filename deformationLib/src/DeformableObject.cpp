@@ -6,9 +6,9 @@ DeformableObject::DeformableObject(std::vector<glm::vec3> _originalPositions, gl
     m_mode = 0;
     m_Aqq = glm::mat3(0.0f);
     // reset all attributes
-    for(unsigned int i = 0 ; i < _originalPositions.size(); ++i)
+    for(auto& pos : _originalPositions)
     {
-        m_listOfParticles.emplace_back(Particle(_originalPositions[i], _vel));
+        m_listOfParticles.emplace_back(Particle(pos, _vel));
     }
     // original center of mass
     m_originalCenterOfMass = computeCOM();
