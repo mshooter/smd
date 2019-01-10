@@ -7,8 +7,7 @@ Build on OSX:
 Compile on OSX:   
 * cd in build/   
 * sudo cmake --build . --config Release --target install 
-<br/>
-<br/>
+
 # Example instructions 
 How to use the deformer on the mesh. <br/>
 1. Load plugin:
