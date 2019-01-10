@@ -120,6 +120,7 @@ class Particle
         /// ---------------------------------------------------------
         /// @build update force method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
+        /// @param[_in] _impuls: collision parameters
         /// ---------------------------------------------------------
         void updateForces(float _timeStep, std::vector<float> _impuls);       
         /// ---------------------------------------------------------
@@ -136,19 +137,22 @@ class Particle
         /// @build update method for individial method
         /// @param[_in] _timeStep : the time for a 'frame'
         /// @param[_in] _stiffness : stiffness of the deformable object
+        /// @param[_in] _bounciness : bounciness of the deformable object
         /// ---------------------------------------------------------
         void shapeMatchUpdate(float _timeStep, float _stiffness, float _bounciness);
+        /// ---------------------------------------------------------
+        /// @build set qTilde method
+        /// ---------------------------------------------------------
         void setQTilde(Eigen::VectorXf _qtilde);
+        /// ---------------------------------------------------------
+        /// @build get QTilde method
+        /// ---------------------------------------------------------
         Eigen::VectorXf getQTilde();
     private:
         /// ---------------------------------------------------------
         /// @build initial position of the particle
         /// ---------------------------------------------------------
         glm::vec3 m_initPosition; 
-        /// ---------------------------------------------------------
-        /// @build the value of gravity 
-        /// ---------------------------------------------------------
-        glm::vec3 m_gravity; 
         /// ---------------------------------------------------------
         /// @build the mass of the particle 
         /// ---------------------------------------------------------
@@ -177,6 +181,9 @@ class Particle
         /// @build  force of the particle   
         /// ---------------------------------------------------------
         glm::vec3 m_force;
+        /// ---------------------------------------------------------
+        /// @build  initial relative positions qTilde for quadratic deformation   
+        /// ---------------------------------------------------------
         Eigen::VectorXf m_qTilde=Eigen::VectorXf(9);
 };
 #endif // _PARTICLE_H_
